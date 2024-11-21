@@ -63,7 +63,7 @@ const getAllMediaSchema = {
 const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.get('/', { schema: getAllMediaSchema }, async (request, reply) => {
     try {
-      const { rows } = await fastify.pg.query('SELECT * FROM media');
+      const { rows } = await fastify.pg.query('SELECT * FROM media ORDER BY id ASC');
       if (rows.length === 0) {
         return reply.notFound('No media files found');
       } else {
