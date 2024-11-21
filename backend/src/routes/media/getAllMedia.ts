@@ -1,55 +1,78 @@
 import { FastifyPluginAsync } from 'fastify'
 
-// TODO: Move this into a separate file
+// Move this into a separate file if needed
 const getAllMediaSchema = {
-    "tags": ["media"],
-    "summary": "Get all media files",
-    "response": {
-      "200": {
-        "description": "List of media files",
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "url": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "500": {
-        "description": "Error fetching media files",
+  "tags": ["media"],
+  "summary": "Get all media files",
+  "response": {
+    "200": {
+      "description": "List of media files",
+      "type": "array",
+      "items": {
         "type": "object",
         "properties": {
-          "message": {
+          "id": {
+            "type": "integer"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "likes": {
+            "type": "integer"
+          },
+          "url": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "mimetype": {
             "type": "string"
           }
         }
       }
-    }
-}
-
-const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
-
-  fastify.get('/', {schema: getAllMediaSchema}, async (req, reply) => {
-    try {
-        const objectsStream = fastify.minio.listObjects(BUCKET_NAME, '', true);
-        const files: { name: string; url: string }[] = [];
-
-        for await (const obj of objectsStream) {
-            const url = await fastify.minio.presignedGetObject(BUCKET_NAME, obj.name);
-            files.push({ name: obj.name, url });
+    },
+    "404": {
+      "description": "No media files found",
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer"
+        },
+        "error": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
         }
-
-        reply.send(files);
-    } catch (err) {
-        reply.status(500).send({ message: 'Error fetching media files'});
+      }
+    },
+    "500": {
+      "description": "Error fetching media files",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
     }
-});
+  }
 }
 
-export default root;
+const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+  fastify.get('/', { schema: getAllMediaSchema }, async (request, reply) => {
+    try {
+      const { rows } = await fastify.pg.query('SELECT * FROM media');
+      if (rows.length === 0) {
+        return reply.notFound('No media files found');
+      } else {
+        return reply.send(rows);
+      }
+    } catch (err) {
+      return reply.internalServerError('Error fetching media files');
+    }
+  });
+}
+
+export default getAllMedia;
