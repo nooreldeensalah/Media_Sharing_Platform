@@ -23,6 +23,17 @@ export const uploadMedia = async (file: File) => {
   return response.json();
 };
 
+export const deleteMedia = async (fileName: string) => {
+  const response = await fetch(`${BASE_URL}/media/${fileName}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete media');
+  }
+
+  return response.json();
+};
+
 export const likeMedia = async (fileName: string) => {
   const response = await fetch(`${BASE_URL}/media/${fileName}/like`, {
     method: 'POST',

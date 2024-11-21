@@ -1,5 +1,5 @@
 import React from 'react';
-import { likeMedia, unlikeMedia } from '../api';
+import { deleteMedia, likeMedia, unlikeMedia } from '../api';
 
 interface MediaItem {
   id: number;
@@ -42,6 +42,17 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
     }
   };
 
+  const handleDelete = async (fileName: string) => {
+    try {
+      const response = await deleteMedia(fileName);
+      if (response?.message) {
+        setMediaItems((prev) => prev.filter((item) => item.file_name !== fileName));
+      }
+    } catch (error) {
+      console.error('Error deleting media:', error);
+    }
+  };
+
   return (
     <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {mediaItems.map((item) => (
@@ -67,6 +78,12 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
                   className="text-red-500 hover:underline"
                 >
                   Unlike
+                </button>
+                <button
+                  onClick={() => handleDelete(item.file_name)}
+                  className="text-red-600 hover:underline"
+                >
+                  Delete
                 </button>
               </div>
             </div>
