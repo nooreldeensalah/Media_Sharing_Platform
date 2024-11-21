@@ -52,21 +52,20 @@ const likeMedia: FastifyPluginAsync = async (fastify): Promise<void> => {
     const { fileName } = req.params as { fileName: string };
 
     try {
-      // Check if the file exists
-      const { rowCount } = await fastify.pg.query('SELECT 1 FROM media WHERE file_name = $1', [fileName]);
-      if (rowCount === 0) {
-        return reply.notFound(`File ${fileName} not found`);
+      const { rows } = await fastify.pg.query(
+        'UPDATE media SET likes = likes + 1 WHERE file_name = $1 RETURNING file_name, likes',
+        [fileName]
+      );
+
+      if (rows.length === 0) {
+        return reply.notFound('File not found');
       }
-
-      // Increment the likes count in the database and return the new likes count
-      const { rows } = await fastify.pg.query('UPDATE media SET likes = likes + 1 WHERE file_name = $1 RETURNING likes', [fileName]);
       const newLikesCount = rows[0].likes;
-
-      return reply.send({ message: `File ${fileName} unLiked successfully!`, newLikesCount });
+      return reply.send({ message: `File ${fileName} liked successfully!`, newLikesCount });
     } catch (err) {
       return reply.internalServerError('Error liking file');
     }
   });
-}
+};
 
 export default likeMedia;
