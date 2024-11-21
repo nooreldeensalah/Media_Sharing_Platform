@@ -2,33 +2,45 @@ const BASE_URL = "http://localhost:3000";
 
 export const getAllMedia = async () => {
   const response = await fetch(`${BASE_URL}/media`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch media');
+  }
   return response.json();
 };
 
 export const uploadMedia = async (file: File) => {
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append('file', file);
 
   const response = await fetch(`${BASE_URL}/media/upload`, {
-    method: "POST",
+    method: 'POST',
     body: formData,
   });
+  if (!response.ok) {
+    throw new Error('Failed to upload media');
+  }
 
   return response.json();
 };
 
 export const likeMedia = async (fileName: string) => {
   const response = await fetch(`${BASE_URL}/media/${fileName}/like`, {
-    method: "POST",
+    method: 'POST',
   });
+  if (!response.ok) {
+    throw new Error('Failed to like media');
+  }
 
   return response.json();
 };
 
 export const unlikeMedia = async (fileName: string) => {
   const response = await fetch(`${BASE_URL}/media/${fileName}/unlike`, {
-    method: "POST",
+    method: 'POST',
   });
+  if (!response.ok) {
+    throw new Error('Failed to unlike media');
+  }
 
   return response.json();
 };
