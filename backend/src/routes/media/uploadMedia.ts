@@ -81,12 +81,12 @@ const uploadMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
     await uploadToMinIO(BUCKET_NAME, fileName, fileBuffer);
 
     const url = await fastify.minio.presignedGetObject(BUCKET_NAME, fileName);
-    await fastify.pg.query(
-      'INSERT INTO media (file_name, likes, url, created_at, mimetype) VALUES ($1, $2, $3, $4, $5)',
+    const { rows } = await fastify.pg.query(
+      'INSERT INTO media (file_name, likes, url, created_at, mimetype) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [fileName, 0, url, new Date(), mimeType]
     );
 
-    return reply.send({ message: 'File uploaded successfully!' });
+    return reply.send(rows[0]);
   });
 }
 
