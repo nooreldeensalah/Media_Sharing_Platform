@@ -1,4 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
+import { S3Error } from 'minio';
 
 // TODO: Move this into a separate file
 const getMediaSchema = {
@@ -61,20 +62,27 @@ const getMediaSchema = {
   }
 }
 
-const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+const getMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+  const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
   fastify.get('/:fileName', { schema: getMediaSchema }, async (request, reply) => {
     const { fileName } = request.params as { fileName: string };
 
     try {
-        const { rows } = await fastify.pg.query('SELECT * FROM media WHERE file_name = $1', [fileName]);
-        if (rows.length === 0) {
-            return reply.notFound('File not found in database');
-        }
-        return reply.send(rows[0]);
+      // Check if file exists in MinIO before querying the database
+      await fastify.minio.statObject(BUCKET_NAME, fileName);
+      const { rows } = await fastify.pg.query('SELECT * FROM media WHERE file_name = $1', [fileName]);
+
+      if (rows.length === 0) {
+        return reply.notFound('File not found in database');
+      }
+      return reply.send(rows[0]);
     } catch (err) {
-            return reply.internalServerError('Error retrieving file');
+      if ((err as S3Error).code === 'NotFound') {
+        return reply.notFound('File not found in MinIO bucket');
+      }
+      return reply.internalServerError('Error retrieving file');
     }
   });
 }
 
-export default root;
+export default getMedia;
