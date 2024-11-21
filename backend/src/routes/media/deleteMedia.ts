@@ -52,12 +52,18 @@ const deleteMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
     const { fileName } = req.params as { fileName: string };
 
     try {
+      try {
+        await fastify.minio.statObject(BUCKET_NAME, fileName);
         await fastify.minio.removeObject(BUCKET_NAME, fileName);
+      } catch (err) {
+        return reply.notFound('File not found');
+      }
+        await fastify.pg.query('DELETE FROM media WHERE file_name = $1', [fileName]);
         reply.send({ message: `File ${fileName} deleted successfully!` });
     } catch (err) {
-        reply.internalServerError('Error deleting file');
+      return reply.internalServerError('Error deleting file');
     }
-});
+  });
 }
 
 export default deleteMedia;
