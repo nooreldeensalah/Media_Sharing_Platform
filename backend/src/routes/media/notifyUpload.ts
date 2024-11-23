@@ -28,26 +28,19 @@ const notifyUploadSchema = {
 const notifyUpload: FastifyPluginAsync = async (fastify): Promise<void> => {
   const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
 
-  fastify.post(
-    "/notify-upload",
-    { schema: notifyUploadSchema },
-    async (req, reply) => {
-      const { fileName, mimeType } = req.body as {
-        fileName: string;
-        mimeType: string;
-      };
+  fastify.post('/notify-upload', { schema: notifyUploadSchema }, async (request, reply) => {
+    const { fileName, mimeType } = request.body as { fileName: string; mimeType: string };
 
+    try {
       const url = await fastify.minio.presignedGetObject(BUCKET_NAME, fileName);
+      const stmt = fastify.sqlite.prepare('INSERT INTO media (file_name, likes, url, created_at, mimetype) VALUES (?, ?, ?, ?, ?)');
+      const info = stmt.run(fileName, 0, url, new Date().toISOString(), mimeType);
 
-      // Save metadata to the database
-      const { rows } = await fastify.pg.query(
-        "INSERT INTO media (file_name, likes, url, created_at, mimetype) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-        [fileName, 0, url, new Date(), mimeType]
-      );
-
-      return reply.send(rows[0]);
+      return reply.send({ id: info.lastInsertRowid, file_name: fileName, likes: 0, url, created_at: new Date(), mimetype: mimeType });
+    } catch (err) {
+      return reply.internalServerError('Error notifying upload');
     }
-  );
+  })
 };
 
 export default notifyUpload;

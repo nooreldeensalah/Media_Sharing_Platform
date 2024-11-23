@@ -20,9 +20,6 @@ const unLikeMediaSchema = {
       "properties": {
         "message": {
           "type": "string"
-        },
-        "newLikesCount": {
-          "type": "number"
         }
       }
     },
@@ -48,21 +45,18 @@ const unLikeMediaSchema = {
 }
 
 const unlikeMedia: FastifyPluginAsync = async (fastify): Promise<void> => {
-  fastify.post('/:fileName/unlike', { schema: unLikeMediaSchema }, async (req, reply) => {
-    const { fileName } = req.params as { fileName: string };
+  fastify.post('/:fileName/unlike', { schema: unLikeMediaSchema }, async (request, reply) => {
+    const { fileName } = request.params as { fileName: string };
 
     try {
-      const { rows } = await fastify.pg.query(
-        'UPDATE media SET likes = likes - 1 WHERE file_name = $1 RETURNING file_name, likes',
-        [fileName]
-      );
+      const stmt = fastify.sqlite.prepare('UPDATE media SET likes = likes - 1 WHERE file_name = ?');
+      const info = stmt.run(fileName);
 
-      if (rows.length === 0) {
+      if (info.changes === 0) {
         return reply.notFound('File not found');
       }
 
-      const newLikesCount = rows[0].likes;
-      return reply.send({ message: `File ${fileName} unLiked successfully!`, newLikesCount });
+      return reply.send({ message: `File ${fileName} unLiked successfully!`});
     } catch (err) {
       return reply.internalServerError('Error unLiking file');
     }

@@ -49,15 +49,20 @@ const deleteMediaSchema = {
 const deleteMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
 
-  fastify.delete('/:fileName', { schema: deleteMediaSchema }, async (req, reply) => {
-    const { fileName } = req.params as { fileName: string };
+  fastify.delete('/:fileName', { schema: deleteMediaSchema }, async (request, reply) => {
+    const { fileName } = request.params as { fileName: string };
 
     try {
       await fastify.minio.statObject(BUCKET_NAME, fileName);
       await fastify.minio.removeObject(BUCKET_NAME, fileName);
+      const stmt = fastify.sqlite.prepare('DELETE FROM media WHERE file_name = ?');
+      const info = stmt.run(fileName);
 
-      await fastify.pg.query('DELETE FROM media WHERE file_name = $1', [fileName]);
-      reply.send({ message: `File ${fileName} deleted successfully!` });
+      if (info.changes === 0) {
+        return reply.notFound('File not found in database');
+      }
+
+      return reply.send({ message: 'File deleted successfully' });
     } catch (err) {
       if ((err as S3Error).code === 'NotFound') {
         return reply.notFound('File not found in MinIO bucket');

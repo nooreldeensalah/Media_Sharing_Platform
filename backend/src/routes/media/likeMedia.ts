@@ -20,9 +20,6 @@ const likeMediaSchema = {
       "properties": {
         "message": {
           "type": "string"
-        },
-        "newLikesCount": {
-          "type": "number"
         }
       }
     },
@@ -48,20 +45,18 @@ const likeMediaSchema = {
 }
 
 const likeMedia: FastifyPluginAsync = async (fastify): Promise<void> => {
-  fastify.post('/:fileName/like', { schema: likeMediaSchema }, async (req, reply) => {
-    const { fileName } = req.params as { fileName: string };
+  fastify.post('/:fileName/like', { schema: likeMediaSchema }, async (request, reply) => {
+    const { fileName } = request.params as { fileName: string };
 
     try {
-      const { rows } = await fastify.pg.query(
-        'UPDATE media SET likes = likes + 1 WHERE file_name = $1 RETURNING file_name, likes',
-        [fileName]
-      );
+      const stmt = fastify.sqlite.prepare('UPDATE media SET likes = likes + 1 WHERE file_name = ?');
+      const info = stmt.run(fileName);
 
-      if (rows.length === 0) {
-        return reply.notFound('File not found');
+      if (info.changes === 0) {
+        return reply.notFound('File not found in database');
       }
-      const newLikesCount = rows[0].likes;
-      return reply.send({ message: `File ${fileName} liked successfully!`, newLikesCount });
+
+      return reply.send({message: `File ${fileName} liked successfully!`});
     } catch (err) {
       return reply.internalServerError('Error liking file');
     }

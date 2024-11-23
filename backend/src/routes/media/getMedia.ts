@@ -70,12 +70,12 @@ const getMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     try {
       // Check if file exists in MinIO before querying the database
       await fastify.minio.statObject(BUCKET_NAME, fileName);
-      const { rows } = await fastify.pg.query('SELECT * FROM media WHERE file_name = $1', [fileName]);
+      const row = fastify.sqlite.prepare('SELECT * FROM media WHERE file_name = ?').get(fileName);
 
-      if (rows.length === 0) {
+      if (!row) {
         return reply.notFound('File not found in database');
       }
-      return reply.send(rows[0]);
+      return reply.send(row);
     } catch (err) {
       if ((err as S3Error).code === 'NotFound') {
         return reply.notFound('File not found in MinIO bucket');
