@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import MediaList from './components/MediaList';
 import UploadMedia from './components/UploadMedia';
+import Login from './components/Login';
+import Register from './components/Register';
+import NavBar from './components/NavBar';
 import { getAllMedia } from './api';
 
 interface MediaItem {
@@ -14,45 +18,57 @@ interface MediaItem {
 
 const App: React.FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!localStorage.getItem('token'));
 
   useEffect(() => {
-    const fetchMedia = async () => {
-      try {
-        const mediaData = await getAllMedia();
-        setMediaItems(mediaData);
-      } catch (error) {
-        console.error('Error fetching media:', error);
-      }
-    };
+    if (isAuthenticated) {
+      const fetchMedia = async () => {
+        try {
+          const mediaData = await getAllMedia();
+          setMediaItems(mediaData);
+        } catch (error) {
+          console.error('Error fetching media:', error);
+        }
+      };
 
-    fetchMedia();
-  }, []);
+      fetchMedia();
+    }
+  }, [isAuthenticated]);
 
   const addNewMediaItem = (newMedia: MediaItem) => {
-    setMediaItems((prevItems) => [...prevItems, newMedia]); // Add to the front of the list
+    setMediaItems((prevItems) => [...prevItems, newMedia]);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4">
-      <header className="w-full bg-white shadow mb-6 p-4">
-        <h1 className="text-3xl font-bold text-blue-600">Media Sharing Platform</h1>
-        <p className="text-gray-600 mt-2 text-center">
-          Upload and explore your media files with ease.
-        </p>
-      </header>
-      <main className="w-full max-w-5xl space-y-6">
-        <section>
-          <UploadMedia addNewMediaItem={addNewMediaItem} />
-        </section>
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Your Media Gallery</h2>
-          <MediaList mediaItems={mediaItems} setMediaItems={setMediaItems} />
-        </section>
-      </main>
-      <footer className="w-full text-center mt-6 p-4 text-gray-500 text-sm">
-        &copy; 2024 Media Sharing Platform. All rights reserved.
-      </footer>
-    </div>
+    <Router>
+      <div className="min-h-screen flex flex-col items-center p-4">
+        <NavBar isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+        <main className="w-full max-w-5xl space-y-6">
+          <Routes>
+            <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login setIsAuthenticated={setIsAuthenticated} />} />
+            <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
+            <Route path="/" element={isAuthenticated ? (
+              <>
+                <section>
+                  <UploadMedia addNewMediaItem={addNewMediaItem} />
+                </section>
+                <section>
+                  <h2 className="text-xl font-semibold mb-4">Your Media Gallery</h2>
+                  <MediaList mediaItems={mediaItems} setMediaItems={setMediaItems} />
+                </section>
+              </>
+            ) : (
+              <Navigate to="/login" />
+            )} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 };
 

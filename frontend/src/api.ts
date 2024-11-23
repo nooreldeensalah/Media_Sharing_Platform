@@ -1,7 +1,46 @@
 const BASE_URL = "http://192.168.1.11:3000";
 
+export const registerUser = async (username: string, password: string) => {
+  const response = await fetch(`${BASE_URL}/users/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to register user");
+  }
+
+  return response.json();
+};
+
+export const loginUser = async (username: string, password: string) => {
+  const response = await fetch(`${BASE_URL}/users/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to login user");
+  }
+
+  return response.json();
+};
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : undefined;
+};
+
 export const getAllMedia = async () => {
-  const response = await fetch(`${BASE_URL}/media`);
+  const response = await fetch(`${BASE_URL}/media`, {
+    headers: getAuthHeaders(),
+  });
   if (response.status === 204) {
     return [];
   }
@@ -17,6 +56,7 @@ export const uploadMedia = async (file: File) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
     body: JSON.stringify({ fileName: file.name, mimeType: file.type }),
   });
@@ -44,6 +84,7 @@ export const uploadMedia = async (file: File) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
     body: JSON.stringify({ fileName: file.name, mimeType: file.type }),
   });
@@ -58,6 +99,7 @@ export const uploadMedia = async (file: File) => {
 export const deleteMedia = async (id: number) => {
   const response = await fetch(`${BASE_URL}/media/${id}`, {
     method: 'DELETE',
+    headers: getAuthHeaders(),
   });
   if (!response.ok) {
     throw new Error('Failed to delete media');
@@ -69,6 +111,7 @@ export const deleteMedia = async (id: number) => {
 export const likeMedia = async (id: number) => {
   const response = await fetch(`${BASE_URL}/media/${id}/like`, {
     method: 'POST',
+    headers: getAuthHeaders(),
   });
   if (!response.ok) {
     throw new Error('Failed to like media');
@@ -80,6 +123,7 @@ export const likeMedia = async (id: number) => {
 export const unlikeMedia = async (id: number) => {
   const response = await fetch(`${BASE_URL}/media/${id}/unlike`, {
     method: 'POST',
+    headers: getAuthHeaders(),
   });
   if (!response.ok) {
     throw new Error('Failed to unlike media');
