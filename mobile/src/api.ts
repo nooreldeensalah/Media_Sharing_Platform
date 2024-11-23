@@ -22,7 +22,7 @@ export const uploadMedia = async (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ fileName }),
+    body: JSON.stringify({ fileName, mimeType }),
   });
 
   if (!preSignedResponse.ok) {

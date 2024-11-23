@@ -4,9 +4,10 @@ const getPreSignedPutURLSchema = {
   tags: ["media"],
   body: {
     type: 'object',
-    required: ['fileName'],
+    required: ['fileName', 'mimeType'],
     properties: {
-      fileName: { type: 'string' }
+      fileName: { type: 'string' },
+      mimeType: { type: 'string' }
     }
   },
   response: {
@@ -21,9 +22,23 @@ const getPreSignedPutURLSchema = {
 
 const getPreSignedPutURL: FastifyPluginAsync = async (fastify): Promise<void> => {
   const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
+  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/mpeg', 'video/quicktime'];
+
+  const ensureBucketExists = async (bucketName: string) => {
+    const exists = await fastify.minio.bucketExists(bucketName);
+    if (!exists) {
+      await fastify.minio.makeBucket(bucketName);
+    }
+  };
 
   fastify.post('/upload-url', { schema: getPreSignedPutURLSchema }, async (request, reply) => {
-    const { fileName } = request.body as { fileName: string };
+    const { fileName, mimeType } = request.body as { fileName: string, mimeType: string };
+
+    if (!allowedMimeTypes.includes(mimeType)) {
+      return reply.badRequest('Invalid file type!');
+    }
+
+    await ensureBucketExists(BUCKET_NAME);
 
     const url = await fastify.minio.presignedPutObject(BUCKET_NAME, fileName);
 
