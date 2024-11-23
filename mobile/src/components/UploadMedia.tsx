@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Button, Alert } from "react-native";
+import { View, Button, Alert, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { uploadMedia } from "../api";
 
@@ -15,7 +15,7 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
     if (status !== "granted") {
       Alert.alert(
         "Permission Denied",
-        "We need access to your photos to upload media.",
+        "We need access to your photos to upload media."
       );
       return;
     }
@@ -44,10 +44,16 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <Button title="Upload Media" onPress={handleUpload} />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+  },
+});
 
 export default UploadMedia;

@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+} from "react-native";
 import { likeMedia, unlikeMedia } from "../api";
 
 interface MediaItem {
@@ -47,39 +54,20 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
       data={mediaItems}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-        <View
-          style={{
-            borderWidth: 1,
-            borderRadius: 8,
-            padding: 16,
-            marginBottom: 16,
-            backgroundColor: "white",
-          }}
-        >
+        <View style={styles.mediaItem}>
           {item.mimetype.startsWith("video") ? (
-            <Text style={{ color: "gray" }}>Video: {item.file_name}</Text>
+            <Text style={styles.mediaText}>Video: {item.file_name}</Text>
           ) : (
-            <Image
-              source={{ uri: item.url }}
-              style={{ width: "100%", height: 160 }}
-            />
+            <Image source={{ uri: item.url }} style={styles.mediaImage} />
           )}
-          <Text style={{ fontSize: 18, fontWeight: "600", marginTop: 8 }}>
-            {item.file_name}
-          </Text>
-          <Text style={{ color: "gray" }}>Likes: {item.likes}</Text>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: 8,
-            }}
-          >
+          <Text style={styles.mediaTitle}>{item.file_name}</Text>
+          <Text style={styles.mediaLikes}>Likes: {item.likes}</Text>
+          <View style={styles.mediaActions}>
             <TouchableOpacity onPress={() => handleLike(item.id)}>
-              <Text style={{ color: "blue" }}>Like</Text>
+              <Text style={styles.likeButton}>Like</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleUnlike(item.id)}>
-              <Text style={{ color: "red" }}>Unlike</Text>
+              <Text style={styles.unlikeButton}>Unlike</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -87,5 +75,41 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
     />
   );
 };
+
+const styles = StyleSheet.create({
+  mediaItem: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+    backgroundColor: "white",
+  },
+  mediaText: {
+    color: "gray",
+  },
+  mediaImage: {
+    width: "100%",
+    height: 160,
+  },
+  mediaTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 8,
+  },
+  mediaLikes: {
+    color: "gray",
+  },
+  mediaActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 8,
+  },
+  likeButton: {
+    color: "blue",
+  },
+  unlikeButton: {
+    color: "red",
+  },
+});
 
 export default MediaList;

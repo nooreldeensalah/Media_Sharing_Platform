@@ -1,40 +1,71 @@
-import React, { useState, useEffect } from "react";
-import { View, ActivityIndicator } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Button, StyleSheet, FlatList } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAllMedia } from "../api";
 import MediaList from "../components/MediaList";
 import UploadMedia from "../components/UploadMedia";
 
-const HomeScreen: React.FC = () => {
-  const [mediaItems, setMediaItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+interface HomeScreenProps {
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
+}
+
+interface MediaItem {
+  id: number;
+  file_name: string;
+  likes: number;
+  url: string;
+  created_at: string;
+  mimetype: string;
+}
+
+const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
 
   useEffect(() => {
     const fetchMedia = async () => {
       try {
-        const media = await getAllMedia();
-        setMediaItems(media);
+        const mediaData = await getAllMedia();
+        setMediaItems(mediaData);
       } catch (error) {
         console.error("Error fetching media:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchMedia();
   }, []);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem("token");
+    setIsAuthenticated(false);
+  };
+
+  const addNewMediaItem = (newMedia: MediaItem) => {
+    setMediaItems((prevItems) => [...prevItems, newMedia]);
+  };
 
   return (
-    <View style={{ padding: 16 }}>
-      <UploadMedia
-        addNewMediaItem={(item) => setMediaItems([...mediaItems, item])}
-      />
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to the Media Sharing Platform</Text>
+      <Button title="Logout" onPress={handleLogout} />
+      <UploadMedia addNewMediaItem={addNewMediaItem} />
       <MediaList mediaItems={mediaItems} setMediaItems={setMediaItems} />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+});
 
 export default HomeScreen;
