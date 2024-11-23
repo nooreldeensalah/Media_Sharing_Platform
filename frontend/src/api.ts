@@ -55,8 +55,8 @@ export const uploadMedia = async (file: File) => {
   return notifyResponse.json();
 };
 
-export const deleteMedia = async (fileName: string) => {
-  const response = await fetch(`${BASE_URL}/media/${fileName}`, {
+export const deleteMedia = async (id: number) => {
+  const response = await fetch(`${BASE_URL}/media/${id}`, {
     method: 'DELETE',
   });
   if (!response.ok) {
@@ -66,8 +66,8 @@ export const deleteMedia = async (fileName: string) => {
   return response.json();
 };
 
-export const likeMedia = async (fileName: string) => {
-  const response = await fetch(`${BASE_URL}/media/${fileName}/like`, {
+export const likeMedia = async (id: number) => {
+  const response = await fetch(`${BASE_URL}/media/${id}/like`, {
     method: 'POST',
   });
   if (!response.ok) {
@@ -77,8 +77,8 @@ export const likeMedia = async (fileName: string) => {
   return response.json();
 };
 
-export const unlikeMedia = async (fileName: string) => {
-  const response = await fetch(`${BASE_URL}/media/${fileName}/unlike`, {
+export const unlikeMedia = async (id: number) => {
+  const response = await fetch(`${BASE_URL}/media/${id}/unlike`, {
     method: 'POST',
   });
   if (!response.ok) {

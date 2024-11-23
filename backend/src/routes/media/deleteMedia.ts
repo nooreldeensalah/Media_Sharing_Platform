@@ -1,19 +1,18 @@
-import { FastifyPluginAsync } from 'fastify'
+import { FastifyPluginAsync } from 'fastify';
 import { S3Error } from 'minio';
 
-// TODO: Add this to a separate file
 const deleteMediaSchema = {
   "tags": ["media"],
   "summary": "Delete a media file",
   "params": {
     "type": "object",
     "properties": {
-      "fileName": {
-        "type": "string",
-        "description": "The name of the file to delete"
+      "id": {
+        "type": "integer",
+        "description": "The ID of the file to delete"
       }
     },
-    "required": ["fileName"]
+    "required": ["id"]
   },
   "response": {
     "200": {
@@ -44,19 +43,34 @@ const deleteMediaSchema = {
       }
     }
   }
+};
+
+interface MediaItem {
+  id: number;
+  file_name: string;
+  url: string;
+  mimetype: string;
+  likes: number;
+  created_at: string;
 }
 
 const deleteMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
 
-  fastify.delete('/:fileName', { schema: deleteMediaSchema }, async (request, reply) => {
-    const { fileName } = request.params as { fileName: string };
+  fastify.delete('/:id', { schema: deleteMediaSchema }, async (request, reply) => {
+    const { id } = request.params as { id: number };
 
     try {
-      await fastify.minio.statObject(BUCKET_NAME, fileName);
-      await fastify.minio.removeObject(BUCKET_NAME, fileName);
-      const stmt = fastify.sqlite.prepare('DELETE FROM media WHERE file_name = ?');
-      const info = stmt.run(fileName);
+      const row = fastify.sqlite.prepare('SELECT file_name FROM media WHERE id = ?').get(id) as MediaItem;
+
+      if (!row) {
+        return reply.notFound('File not found in database');
+      }
+
+      await fastify.minio.statObject(BUCKET_NAME, row.file_name);
+      await fastify.minio.removeObject(BUCKET_NAME, row.file_name);
+      const stmt = fastify.sqlite.prepare('DELETE FROM media WHERE id = ?');
+      const info = stmt.run(id);
 
       if (info.changes === 0) {
         return reply.notFound('File not found in database');

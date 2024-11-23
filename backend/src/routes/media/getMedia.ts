@@ -1,19 +1,18 @@
-import { FastifyPluginAsync } from 'fastify'
+import { FastifyPluginAsync } from 'fastify';
 import { S3Error } from 'minio';
 
-// TODO: Move this into a separate file
 const getMediaSchema = {
   "tags": ["media"],
   "summary": "Get a presigned URL for a media file",
   "params": {
     "type": "object",
     "properties": {
-      "fileName": {
-        "type": "string",
-        "description": "The name of the file to retrieve"
+      "id": {
+        "type": "integer",
+        "description": "The ID of the file to retrieve"
       }
     },
-    "required": ["fileName"]
+    "required": ["id"]
   },
   "response": {
     "200": {
@@ -63,18 +62,16 @@ const getMediaSchema = {
 }
 
 const getMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
-  fastify.get('/:fileName', { schema: getMediaSchema }, async (request, reply) => {
-    const { fileName } = request.params as { fileName: string };
+  fastify.get('/:id', { schema: getMediaSchema }, async (request, reply) => {
+    const { id } = request.params as { id: number };
 
     try {
-      // Check if file exists in MinIO before querying the database
-      await fastify.minio.statObject(BUCKET_NAME, fileName);
-      const row = fastify.sqlite.prepare('SELECT * FROM media WHERE file_name = ?').get(fileName);
+      const row = fastify.sqlite.prepare('SELECT * FROM media WHERE id = ?').get(id);
 
       if (!row) {
         return reply.notFound('File not found in database');
       }
+
       return reply.send(row);
     } catch (err) {
       if ((err as S3Error).code === 'NotFound') {

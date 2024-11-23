@@ -16,14 +16,12 @@ interface MediaListProps {
 }
 
 const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
-  const handleLike = async (fileName: string) => {
+  const handleLike = async (id: number) => {
     try {
-      await likeMedia(fileName);
+      await likeMedia(id);
       setMediaItems((prev) =>
         prev.map((item) =>
-          item.file_name === fileName
-            ? { ...item, likes: item.likes + 1 }
-            : item,
+          item.id === id ? { ...item, likes: item.likes + 1 } : item,
         ),
       );
     } catch (error) {
@@ -31,14 +29,12 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
     }
   };
 
-  const handleUnlike = async (fileName: string) => {
+  const handleUnlike = async (id: number) => {
     try {
-      await unlikeMedia(fileName);
+      await unlikeMedia(id);
       setMediaItems((prev) =>
         prev.map((item) =>
-          item.file_name === fileName
-            ? { ...item, likes: item.likes - 1 }
-            : item,
+          item.id === id ? { ...item, likes: item.likes - 1 } : item,
         ),
       );
     } catch (error) {
@@ -79,10 +75,10 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
               marginTop: 8,
             }}
           >
-            <TouchableOpacity onPress={() => handleLike(item.file_name)}>
+            <TouchableOpacity onPress={() => handleLike(item.id)}>
               <Text style={{ color: "blue" }}>Like</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleUnlike(item.file_name)}>
+            <TouchableOpacity onPress={() => handleUnlike(item.id)}>
               <Text style={{ color: "red" }}>Unlike</Text>
             </TouchableOpacity>
           </View>

@@ -16,12 +16,12 @@ interface MediaListProps {
 }
 
 const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
-  const handleLike = async (fileName: string) => {
+  const handleLike = async (id: number) => {
     try {
-      await likeMedia(fileName);
+      await likeMedia(id);
       setMediaItems((prev) =>
         prev.map((item) =>
-          item.file_name === fileName ? { ...item, likes: item.likes + 1 } : item
+          item.id === id ? { ...item, likes: item.likes + 1 } : item
         )
       );
     } catch (error) {
@@ -29,12 +29,12 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
     }
   };
 
-  const handleUnlike = async (fileName: string) => {
+  const handleUnlike = async (id: number) => {
     try {
-      await unlikeMedia(fileName);
+      await unlikeMedia(id);
       setMediaItems((prev) =>
         prev.map((item) =>
-          item.file_name === fileName ? { ...item, likes: item.likes - 1 } : item
+          item.id === id ? { ...item, likes: item.likes - 1 } : item
         )
       );
     } catch (error) {
@@ -42,11 +42,11 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
     }
   };
 
-  const handleDelete = async (fileName: string) => {
+  const handleDelete = async (id: number) => {
     try {
-      const response = await deleteMedia(fileName);
+      const response = await deleteMedia(id);
       if (response?.message) {
-        setMediaItems((prev) => prev.filter((item) => item.file_name !== fileName));
+        setMediaItems((prev) => prev.filter((item) => item.id !== id));
       }
     } catch (error) {
       console.error('Error deleting media:', error);
@@ -68,19 +68,19 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
               <span className="text-gray-600 text-sm">{item.likes} Likes</span>
               <div className="space-x-2">
                 <button
-                  onClick={() => handleLike(item.file_name)}
+                  onClick={() => handleLike(item.id)}
                   className="text-blue-500 hover:underline"
                 >
                   Like
                 </button>
                 <button
-                  onClick={() => handleUnlike(item.file_name)}
+                  onClick={() => handleUnlike(item.id)}
                   className="text-red-500 hover:underline"
                 >
                   Unlike
                 </button>
                 <button
-                  onClick={() => handleDelete(item.file_name)}
+                  onClick={() => handleDelete(item.id)}
                   className="text-red-600 hover:underline"
                 >
                   Delete

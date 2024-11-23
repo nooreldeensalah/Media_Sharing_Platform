@@ -1,4 +1,4 @@
-import { FastifyPluginAsync } from 'fastify'
+import { FastifyPluginAsync } from 'fastify';
 
 const unLikeMediaSchema = {
   "tags": ["media"],
@@ -6,12 +6,12 @@ const unLikeMediaSchema = {
   "params": {
     "type": "object",
     "properties": {
-      "fileName": {
-        "type": "string",
-        "description": "The name of the file to unlike"
+      "id": {
+        "type": "integer",
+        "description": "The ID of the file to unlike"
       }
     },
-    "required": ["fileName"]
+    "required": ["id"]
   },
   "response": {
     "200": {
@@ -45,18 +45,18 @@ const unLikeMediaSchema = {
 }
 
 const unlikeMedia: FastifyPluginAsync = async (fastify): Promise<void> => {
-  fastify.post('/:fileName/unlike', { schema: unLikeMediaSchema }, async (request, reply) => {
-    const { fileName } = request.params as { fileName: string };
+  fastify.post('/:id/unlike', { schema: unLikeMediaSchema }, async (request, reply) => {
+    const { id } = request.params as { id: number };
 
     try {
-      const stmt = fastify.sqlite.prepare('UPDATE media SET likes = likes - 1 WHERE file_name = ?');
-      const info = stmt.run(fileName);
+      const stmt = fastify.sqlite.prepare('UPDATE media SET likes = likes - 1 WHERE id = ?');
+      const info = stmt.run(id);
 
       if (info.changes === 0) {
         return reply.notFound('File not found');
       }
 
-      return reply.send({ message: `File ${fileName} unLiked successfully!`});
+      return reply.send({ message: `File with ID: ${id} unLiked successfully!` });
     } catch (err) {
       return reply.internalServerError('Error unLiking file');
     }
