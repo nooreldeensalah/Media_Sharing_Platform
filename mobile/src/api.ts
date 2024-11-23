@@ -8,14 +8,18 @@ export const getAllMedia = async () => {
   return response.json();
 };
 
-export const uploadMedia = async (file: any) => {
+export const uploadMedia = async (
+  file: Blob,
+  mimeType: string,
+  fileName: string,
+) => {
   // Step 1: Request a pre-signed PUT URL from the backend
   const preSignedResponse = await fetch(`${BASE_URL}/media/upload-url`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ fileName: file.name }),
+    body: JSON.stringify({ fileName }),
   });
 
   if (!preSignedResponse.ok) {
@@ -28,7 +32,7 @@ export const uploadMedia = async (file: any) => {
   const uploadResponse = await fetch(url, {
     method: "PUT",
     headers: {
-      "Content-Type": file.type,
+      "Content-Type": mimeType,
     },
     body: file,
   });
@@ -42,7 +46,7 @@ export const uploadMedia = async (file: any) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ fileName: file.name }),
+    body: JSON.stringify({ fileName, mimeType }),
   });
 
   if (!notifyResponse.ok) {

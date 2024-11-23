@@ -30,7 +30,7 @@ const HomeScreen: React.FC = () => {
   return (
     <View style={{ padding: 16 }}>
       <UploadMedia
-        addNewMediaItem={(item) => setMediaItems([item, ...mediaItems])}
+        addNewMediaItem={(item) => setMediaItems([...mediaItems, item])}
       />
       <MediaList mediaItems={mediaItems} setMediaItems={setMediaItems} />
     </View>

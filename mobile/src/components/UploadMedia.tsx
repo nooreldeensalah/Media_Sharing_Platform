@@ -21,18 +21,21 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ["images", "videos"],
       allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
     });
 
     if (!result.canceled) {
-      const formData = new FormData();
-      formData.append("file", "file");
-
       try {
-        const uploadedMedia = await uploadMedia(formData);
+        const fileUri = result.assets[0].uri;
+        const fileMimeType = result.assets[0].mimeType || "image/jpeg";
+        const fileName = result.assets[0].fileName || "random-file-name.jpeg";
+
+        const response = await fetch(fileUri);
+        const blob = await response.blob();
+
+        const uploadedMedia = await uploadMedia(blob, fileMimeType, fileName);
         addNewMediaItem(uploadedMedia);
       } catch (error) {
         console.error("Error uploading media:", error);
