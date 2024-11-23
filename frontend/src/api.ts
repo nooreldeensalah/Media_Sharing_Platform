@@ -12,18 +12,47 @@ export const getAllMedia = async () => {
 };
 
 export const uploadMedia = async (file: File) => {
-  const formData = new FormData();
-  formData.append('file', file);
-
-  const response = await fetch(`${BASE_URL}/media/upload`, {
-    method: 'POST',
-    body: formData,
+  // Step 1: Request a pre-signed PUT URL from the backend
+  const preSignedResponse = await fetch(`${BASE_URL}/media/upload-url`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ fileName: file.name }),
   });
-  if (!response.ok) {
-    throw new Error('Failed to upload media');
+
+  if (!preSignedResponse.ok) {
+    throw new Error("Failed to fetch pre-signed URL");
   }
 
-  return response.json();
+  const { url } = await preSignedResponse.json();
+
+  // Step 2: Use the pre-signed URL to upload the file directly to MinIO
+  const uploadResponse = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": file.type,
+    },
+    body: file,
+  });
+
+  if (!uploadResponse.ok) {
+    throw new Error("Failed to upload file to MinIO");
+  }
+
+  const notifyResponse = await fetch(`${BASE_URL}/media/notify-upload`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ fileName: file.name, mimeType: file.type }),
+  });
+
+  if (!notifyResponse.ok) {
+    throw new Error("Failed to notify backend about upload");
+  }
+
+  return notifyResponse.json();
 };
 
 export const deleteMedia = async (fileName: string) => {

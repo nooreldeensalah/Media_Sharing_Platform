@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { uploadMedia } from '../api'; // Assuming your API utility is here
+import { uploadMedia } from '../api';
 
 interface MediaItem {
   id: number;
@@ -32,9 +32,9 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
 
     try {
       setUploading(true);
-      const uploadedMedia = await uploadMedia(selectedFile); // Upload and get the media item
-      addNewMediaItem(uploadedMedia); // Update the media list in App.tsx
-      setSelectedFile(null); // Clear the selected file
+      const uploadedMedia = await uploadMedia(selectedFile);
+      addNewMediaItem(uploadedMedia);
+      setSelectedFile(null);
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('File upload failed.');
