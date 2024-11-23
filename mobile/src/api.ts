@@ -2,6 +2,9 @@ const BASE_URL = "http://192.168.1.11:3000";
 
 export const getAllMedia = async () => {
   const response = await fetch(`${BASE_URL}/media`);
+  if (response.status === 204) {
+    return [];
+  }
   if (!response.ok) {
     throw new Error("Failed to fetch media");
   }

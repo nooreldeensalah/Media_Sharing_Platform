@@ -33,20 +33,9 @@ const getAllMediaSchema = {
         }
       }
     },
-    "404": {
+    "204": {
       "description": "No media files found",
-      "type": "object",
-      "properties": {
-        "statusCode": {
-          "type": "integer"
-        },
-        "error": {
-          "type": "string"
-        },
-        "message": {
-          "type": "string"
-        }
-      }
+      "type": "null"
     },
     "500": {
       "description": "Error fetching media files",
@@ -65,7 +54,7 @@ const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
     try {
       const { rows } = await fastify.pg.query('SELECT * FROM media ORDER BY id ASC');
       if (rows.length === 0) {
-        return reply.notFound('No media files found');
+        return reply.status(204).send();
       } else {
         return reply.send(rows);
       }
