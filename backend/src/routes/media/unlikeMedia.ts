@@ -45,7 +45,7 @@ const unLikeMediaSchema = {
 }
 
 const unlikeMedia: FastifyPluginAsync = async (fastify): Promise<void> => {
-  fastify.post('/:id/unlike', { schema: unLikeMediaSchema }, async (request, reply) => {
+  fastify.post('/:id/unlike', { schema: unLikeMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { id } = request.params as { id: number };
 
     try {

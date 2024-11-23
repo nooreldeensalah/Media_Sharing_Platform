@@ -57,7 +57,7 @@ interface MediaItem {
 const deleteMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
 
-  fastify.delete('/:id', { schema: deleteMediaSchema }, async (request, reply) => {
+  fastify.delete('/:id', { schema: deleteMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { id } = request.params as { id: number };
 
     try {

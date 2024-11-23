@@ -28,7 +28,7 @@ const notifyUploadSchema = {
 const notifyUpload: FastifyPluginAsync = async (fastify): Promise<void> => {
   const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
 
-  fastify.post('/notify-upload', { schema: notifyUploadSchema }, async (request, reply) => {
+  fastify.post('/notify-upload', { schema: notifyUploadSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { fileName, mimeType } = request.body as { fileName: string; mimeType: string };
 
     try {

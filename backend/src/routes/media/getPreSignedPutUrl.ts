@@ -31,7 +31,7 @@ const getPreSignedPutURL: FastifyPluginAsync = async (fastify): Promise<void> =>
     }
   };
 
-  fastify.post('/upload-url', { schema: getPreSignedPutURLSchema }, async (request, reply) => {
+  fastify.post('/upload-url', { schema: getPreSignedPutURLSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { fileName, mimeType } = request.body as { fileName: string, mimeType: string };
 
     if (!allowedMimeTypes.includes(mimeType)) {

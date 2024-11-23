@@ -50,7 +50,7 @@ const getAllMediaSchema = {
 }
 
 const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get('/', { schema: getAllMediaSchema }, async (request, reply) => {
+  fastify.get('/', { schema: getAllMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     try {
       const rows = fastify.sqlite.prepare('SELECT * FROM media ORDER BY id ASC').all();
       if (rows.length === 0) {

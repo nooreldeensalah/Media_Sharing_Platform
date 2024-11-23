@@ -62,7 +62,7 @@ const getMediaSchema = {
 }
 
 const getMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get('/:id', { schema: getMediaSchema }, async (request, reply) => {
+  fastify.get('/:id', { schema: getMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { id } = request.params as { id: number };
 
     try {

@@ -45,7 +45,7 @@ const likeMediaSchema = {
 }
 
 const likeMedia: FastifyPluginAsync = async (fastify): Promise<void> => {
-  fastify.post('/:id/like', { schema: likeMediaSchema }, async (request, reply) => {
+  fastify.post('/:id/like', { schema: likeMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { id } = request.params as { id: number };
 
     try {

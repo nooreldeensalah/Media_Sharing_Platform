@@ -31,8 +31,17 @@ const sqlitePlugin: FastifyPluginAsync<SQLitePluginOptions> = async (fastify, op
     );
   `;
 
+  const createUsersTableQuery = `
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL UNIQUE,
+      password TEXT NOT NULL
+    );
+  `;
+
   try {
     db.exec(createMediaTableQuery);
+    db.exec(createUsersTableQuery);
   } catch (error) {
     throw new Error('Failed to initialize database schema');
   }
