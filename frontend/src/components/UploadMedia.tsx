@@ -8,6 +8,7 @@ interface MediaItem {
   url: string;
   created_at: string;
   mimetype: string;
+  likedByUser: boolean;
 }
 
 interface UploadMediaProps {

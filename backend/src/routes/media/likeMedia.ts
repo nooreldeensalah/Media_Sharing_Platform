@@ -47,14 +47,23 @@ const likeMediaSchema = {
 const likeMedia: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.post('/:id/like', { schema: likeMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { id } = request.params as { id: number };
+    const userId = request.user.id;
 
     try {
+      const likeExists = fastify.sqlite.prepare('SELECT 1 FROM likes WHERE user_id = ? AND media_id = ?').get(userId, id);
+
+      if (likeExists) {
+        return reply.badRequest('You have already liked this media');
+      }
+
       const stmt = fastify.sqlite.prepare('UPDATE media SET likes = likes + 1 WHERE id = ?');
       const info = stmt.run(id);
 
       if (info.changes === 0) {
         return reply.notFound('File not found in database');
       }
+
+      fastify.sqlite.prepare('INSERT INTO likes (user_id, media_id) VALUES (?, ?)').run(userId, id);
 
       return reply.send({ message: `File with ID: ${id} liked successfully!` });
     } catch (err) {

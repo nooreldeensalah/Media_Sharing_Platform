@@ -1,5 +1,6 @@
 import React from 'react';
 import { deleteMedia, likeMedia, unlikeMedia } from '../api';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 
 interface MediaItem {
   id: number;
@@ -8,6 +9,7 @@ interface MediaItem {
   url: string;
   created_at: string;
   mimetype: string;
+  likedByUser: boolean;
 }
 
 interface MediaListProps {
@@ -21,7 +23,7 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
       await likeMedia(id);
       setMediaItems((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, likes: item.likes + 1 } : item
+          item.id === id ? { ...item, likes: item.likes + 1, likedByUser: true } : item
         )
       );
     } catch (error) {
@@ -34,7 +36,7 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
       await unlikeMedia(id);
       setMediaItems((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, likes: item.likes - 1 } : item
+          item.id === id ? { ...item, likes: item.likes - 1, likedByUser: false } : item
         )
       );
     } catch (error) {
@@ -67,18 +69,11 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
             <div className="flex justify-between items-center mt-2">
               <span className="text-gray-600 text-sm">{item.likes} Likes</span>
               <div className="space-x-2">
-                <button
-                  onClick={() => handleLike(item.id)}
-                  className="text-blue-500 hover:underline"
-                >
-                  Like
-                </button>
-                <button
-                  onClick={() => handleUnlike(item.id)}
-                  className="text-red-500 hover:underline"
-                >
-                  Unlike
-                </button>
+                {item.likedByUser ? (
+                  <FaHeart className="text-red-500 cursor-pointer" onClick={() => handleUnlike(item.id)} />
+                ) : (
+                  <FaRegHeart className="text-gray-500 cursor-pointer" onClick={() => handleLike(item.id)} />
+                )}
                 <button
                   onClick={() => handleDelete(item.id)}
                   className="text-red-600 hover:underline"

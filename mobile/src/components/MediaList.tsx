@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { likeMedia, unlikeMedia } from "../api";
+import { FontAwesome } from "@expo/vector-icons";
 
 interface MediaItem {
   id: number;
@@ -15,6 +16,7 @@ interface MediaItem {
   url: string;
   mimetype: string;
   likes: number;
+  likedByUser: boolean;
 }
 
 interface MediaListProps {
@@ -28,7 +30,9 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
       await likeMedia(id);
       setMediaItems((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, likes: item.likes + 1 } : item,
+          item.id === id
+            ? { ...item, likes: item.likes + 1, likedByUser: true }
+            : item,
         ),
       );
     } catch (error) {
@@ -41,7 +45,9 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
       await unlikeMedia(id);
       setMediaItems((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, likes: item.likes - 1 } : item,
+          item.id === id
+            ? { ...item, likes: item.likes - 1, likedByUser: false }
+            : item,
         ),
       );
     } catch (error) {
@@ -63,11 +69,16 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
           <Text style={styles.mediaTitle}>{item.file_name}</Text>
           <Text style={styles.mediaLikes}>Likes: {item.likes}</Text>
           <View style={styles.mediaActions}>
-            <TouchableOpacity onPress={() => handleLike(item.id)}>
-              <Text style={styles.likeButton}>Like</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleUnlike(item.id)}>
-              <Text style={styles.unlikeButton}>Unlike</Text>
+            <TouchableOpacity
+              onPress={() =>
+                item.likedByUser ? handleUnlike(item.id) : handleLike(item.id)
+              }
+            >
+              <FontAwesome
+                name={item.likedByUser ? "heart" : "heart-o"}
+                size={24}
+                color={item.likedByUser ? "red" : "gray"}
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -103,12 +114,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 8,
-  },
-  likeButton: {
-    color: "blue",
-  },
-  unlikeButton: {
-    color: "red",
   },
 });
 

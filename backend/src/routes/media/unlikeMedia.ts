@@ -47,14 +47,23 @@ const unLikeMediaSchema = {
 const unlikeMedia: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.post('/:id/unlike', { schema: unLikeMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { id } = request.params as { id: number };
+    const userId = request.user.id;
 
     try {
+      const likeExists = fastify.sqlite.prepare('SELECT 1 FROM likes WHERE user_id = ? AND media_id = ?').get(userId, id);
+
+      if (!likeExists) {
+        return reply.badRequest('You have not liked this media');
+      }
+
       const stmt = fastify.sqlite.prepare('UPDATE media SET likes = likes - 1 WHERE id = ?');
       const info = stmt.run(id);
 
       if (info.changes === 0) {
         return reply.notFound('File not found');
       }
+
+      fastify.sqlite.prepare('DELETE FROM likes WHERE user_id = ? AND media_id = ?').run(userId, id);
 
       return reply.send({ message: `File with ID: ${id} unLiked successfully!` });
     } catch (err) {

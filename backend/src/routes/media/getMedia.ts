@@ -36,6 +36,9 @@ const getMediaSchema = {
         },
         "mimetype": {
           "type": "string"
+        },
+        "likedByUser": {
+          "type": "boolean"
         }
       }
     },

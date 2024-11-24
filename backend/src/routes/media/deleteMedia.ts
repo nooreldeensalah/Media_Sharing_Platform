@@ -52,6 +52,7 @@ interface MediaItem {
   mimetype: string;
   likes: number;
   created_at: string;
+  likedByUser: boolean;
 }
 
 const deleteMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {

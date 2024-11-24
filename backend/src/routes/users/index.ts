@@ -82,14 +82,14 @@ const users: FastifyPluginAsync = async (fastify): Promise<void> => {
 
   fastify.post('/login', { schema: loginSchema }, async (request, reply) => {
     const { username, password } = request.body as { username: string, password: string };
-    const stmt = fastify.sqlite.prepare('SELECT password FROM users WHERE username = ?');
+    const stmt = fastify.sqlite.prepare('SELECT * FROM users WHERE username = ?');
     const user = stmt.get(username) as User
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return reply.unauthorized('Invalid username or password');
     }
 
-    const token = fastify.jwt.sign({ username });
+    const token = fastify.jwt.sign({ id: user.id, username });
     reply.send({ token });
   });
 };

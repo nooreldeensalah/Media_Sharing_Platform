@@ -29,6 +29,9 @@ const getAllMediaSchema = {
           },
           "mimetype": {
             "type": "string"
+          },
+          "likedByUser": {
+            "type": "boolean"
           }
         }
       }
@@ -51,8 +54,17 @@ const getAllMediaSchema = {
 
 const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.get('/', { schema: getAllMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
+    const userId = request.user.id;
+
     try {
-      const rows = fastify.sqlite.prepare('SELECT * FROM media ORDER BY id ASC').all();
+      const rows = fastify.sqlite.prepare(`
+        SELECT media.*,
+          CASE WHEN likes.user_id IS NOT NULL THEN 1 ELSE 0 END AS likedByUser
+        FROM media
+        LEFT JOIN likes ON media.id = likes.media_id AND likes.user_id = ?
+        ORDER BY media.id ASC
+      `).all(userId);
+
       if (rows.length === 0) {
         return reply.status(204).send();
       } else {
