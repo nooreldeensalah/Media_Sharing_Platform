@@ -41,7 +41,7 @@ const notifyUpload: FastifyPluginAsync = async (fastify): Promise<void> => {
         Key: fileName
       });
 
-      const url = await getSignedUrl(fastify.s3, command);
+      const url = await getSignedUrl(fastify.s3, command, { expiresIn: 60 * 60 * 24 * 7 });
       const stmt = fastify.sqlite.prepare('INSERT INTO media (file_name, likes, url, created_at, mimetype, created_by) VALUES (?, ?, ?, ?, ?, ?)');
       const info = stmt.run(fileName, 0, url, new Date().toISOString(), mimeType, mediaCreator);
 
