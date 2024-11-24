@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 const BASE_URL = "http://192.168.1.11:3000";
 
 export const registerUser = async (username: string, password: string) => {
@@ -51,6 +53,8 @@ export const getAllMedia = async () => {
 };
 
 export const uploadMedia = async (file: File) => {
+  const fileName = uuidv4();
+
   // Step 1: Request a pre-signed PUT URL from the backend
   const preSignedResponse = await fetch(`${BASE_URL}/media/upload-url`, {
     method: "POST",
@@ -58,7 +62,7 @@ export const uploadMedia = async (file: File) => {
       "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify({ fileName: file.name, mimeType: file.type }),
+    body: JSON.stringify({ fileName, mimeType: file.type }),
   });
 
   if (!preSignedResponse.ok) {
@@ -86,7 +90,7 @@ export const uploadMedia = async (file: File) => {
       "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify({ fileName: file.name, mimeType: file.type }),
+    body: JSON.stringify({ fileName, mimeType: file.type }),
   });
 
   if (!notifyResponse.ok) {

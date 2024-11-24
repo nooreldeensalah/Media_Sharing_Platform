@@ -85,7 +85,6 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
               />
             )}
             <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-800 truncate">{item.file_name}</h3>
               <p className="text-sm text-gray-500">
                 Uploaded on: {new Date(item.created_at).toLocaleDateString()}
               </p>
