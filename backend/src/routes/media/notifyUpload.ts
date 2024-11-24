@@ -1,4 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const notifyUploadSchema = {
   tags: ["media"],
@@ -32,7 +34,12 @@ const notifyUpload: FastifyPluginAsync = async (fastify): Promise<void> => {
     const { fileName, mimeType } = request.body as { fileName: string; mimeType: string };
 
     try {
-      const url = await fastify.minio.presignedGetObject(BUCKET_NAME, fileName);
+      const command = new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: fileName
+      });
+
+      const url = await getSignedUrl(fastify.s3, command);
       const stmt = fastify.sqlite.prepare('INSERT INTO media (file_name, likes, url, created_at, mimetype) VALUES (?, ?, ?, ?, ?)');
       const info = stmt.run(fileName, 0, url, new Date().toISOString(), mimeType);
 

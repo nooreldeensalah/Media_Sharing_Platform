@@ -1,4 +1,6 @@
-import { FastifyPluginAsync } from 'fastify'
+import { FastifyPluginAsync } from 'fastify';
+import { PutObjectCommand, CreateBucketCommand, HeadBucketCommand, S3ServiceException } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const getPreSignedPutURLSchema = {
   tags: ["media"],
@@ -25,9 +27,14 @@ const getPreSignedPutURL: FastifyPluginAsync = async (fastify): Promise<void> =>
   const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/mpeg', 'video/quicktime'];
 
   const ensureBucketExists = async (bucketName: string) => {
-    const exists = await fastify.minio.bucketExists(bucketName);
-    if (!exists) {
-      await fastify.minio.makeBucket(bucketName);
+    try {
+      await fastify.s3.send(new HeadBucketCommand({ Bucket: bucketName }));
+    } catch (err) {
+      if ((err as S3ServiceException).$metadata.httpStatusCode === 404) {
+        await fastify.s3.send(new CreateBucketCommand({ Bucket: bucketName }));
+      } else {
+        throw err;
+      }
     }
   };
 
@@ -40,7 +47,13 @@ const getPreSignedPutURL: FastifyPluginAsync = async (fastify): Promise<void> =>
 
     await ensureBucketExists(BUCKET_NAME);
 
-    const url = await fastify.minio.presignedPutObject(BUCKET_NAME, fileName);
+    const command = new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: fileName,
+      ContentType: mimeType
+    });
+
+    const url = await getSignedUrl(fastify.s3, command);
 
     reply.send({ url });
   });

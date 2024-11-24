@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { S3Error } from 'minio';
+import { HeadObjectCommand, DeleteObjectCommand, S3ServiceException } from '@aws-sdk/client-s3';
 
 const deleteMediaSchema = {
   "tags": ["media"],
@@ -67,8 +67,8 @@ const deleteMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
         return reply.notFound('File not found in database');
       }
 
-      await fastify.minio.statObject(BUCKET_NAME, row.file_name);
-      await fastify.minio.removeObject(BUCKET_NAME, row.file_name);
+      await fastify.s3.send(new HeadObjectCommand({ Bucket: BUCKET_NAME, Key: row.file_name }));
+      await fastify.s3.send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: row.file_name }));
       const stmt = fastify.sqlite.prepare('DELETE FROM media WHERE id = ?');
       const info = stmt.run(id);
 
@@ -78,8 +78,9 @@ const deleteMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
 
       return reply.send({ message: 'File deleted successfully' });
     } catch (err) {
-      if ((err as S3Error).code === 'NotFound') {
-        return reply.notFound('File not found in MinIO bucket');
+      if ((err as S3ServiceException).$metadata?.httpStatusCode === 404) {
+        console.error(err);
+        return reply.notFound('File not found in S3 bucket');
       }
       return reply.internalServerError('Error deleting file');
     }

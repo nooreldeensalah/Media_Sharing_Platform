@@ -1,5 +1,4 @@
 import { FastifyPluginAsync } from 'fastify';
-import { S3Error } from 'minio';
 
 const getMediaSchema = {
   "tags": ["media"],
@@ -74,9 +73,6 @@ const getMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
       return reply.send(row);
     } catch (err) {
-      if ((err as S3Error).code === 'NotFound') {
-        return reply.notFound('File not found in MinIO bucket');
-      }
       return reply.internalServerError('Error retrieving file');
     }
   });
