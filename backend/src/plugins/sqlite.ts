@@ -8,14 +8,11 @@ declare module 'fastify' {
   }
 }
 
-interface SQLitePluginOptions {
-  databasePath: string;
-}
 
-const sqlitePlugin: FastifyPluginAsync<SQLitePluginOptions> = async (fastify, options) => {
-  const { databasePath } = options;
+const sqlitePlugin: FastifyPluginAsync = async (fastify, options) => {
+  const { DATABASE_FILE_NAME } = process.env;
 
-  const db = sqlite3(databasePath || 'database.sqlite');
+  const db = sqlite3(DATABASE_FILE_NAME || "database.sqlite");
 
   fastify.decorate('sqlite', db);
 
