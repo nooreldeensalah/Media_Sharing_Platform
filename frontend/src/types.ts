@@ -7,4 +7,5 @@ export interface MediaItem {
   mimetype: string;
   likedByUser: boolean;
   created_by: string;
+  deletable: boolean;
 }

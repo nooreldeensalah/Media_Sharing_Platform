@@ -48,21 +48,27 @@ const deleteMediaSchema = {
 interface MediaItem {
   id: number;
   file_name: string;
-  url: string;
-  mimetype: string;
   likes: number;
+  url: string;
   created_at: string;
-  likedByUser: boolean;
+  mimetype: string;
+  created_by: string;
 }
+
 
 const deleteMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
 
   fastify.delete('/:id', { schema: deleteMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { id } = request.params as { id: number };
+    const { username } = request.user
 
     try {
-      const row = fastify.sqlite.prepare('SELECT file_name FROM media WHERE id = ?').get(id) as MediaItem;
+      const row = fastify.sqlite.prepare('SELECT * FROM media WHERE id = ?').get(id) as MediaItem;
+
+      if (row.created_by !== username) {
+        return reply.forbidden('You do not have permission to delete this file');
+      }
 
       if (!row) {
         return reply.notFound('File not found in database');

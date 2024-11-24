@@ -22,7 +22,8 @@ const notifyUploadSchema = {
         url: { type: "string" },
         created_at: { type: "string", format: "date-time" },
         mimetype: { type: "string" },
-        created_by: {type: "string"}
+        created_by: {type: "string"},
+        deletable: { type: "boolean" },
       },
     },
   },
@@ -45,7 +46,7 @@ const notifyUpload: FastifyPluginAsync = async (fastify): Promise<void> => {
       const stmt = fastify.sqlite.prepare('INSERT INTO media (file_name, likes, url, created_at, mimetype, created_by) VALUES (?, ?, ?, ?, ?, ?)');
       const info = stmt.run(fileName, 0, url, new Date().toISOString(), mimeType, mediaCreator);
 
-      return reply.send({ id: info.lastInsertRowid, file_name: fileName, likes: 0, url, created_at: new Date(), mimetype: mimeType, created_by: mediaCreator });
+      return reply.send({ id: info.lastInsertRowid, file_name: fileName, likes: 0, url, created_at: new Date(), mimetype: mimeType, created_by: mediaCreator, deletable: true });
     } catch (err) {
       return reply.internalServerError('Error notifying upload');
     }

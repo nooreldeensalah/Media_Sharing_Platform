@@ -1,6 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
 
-// Move this into a separate file if needed
 const getAllMediaSchema = {
   "tags": ["media"],
   "summary": "Get all media files",
@@ -33,8 +32,11 @@ const getAllMediaSchema = {
           "likedByUser": {
             "type": "boolean"
           },
-          'created_by': {
-            'type': 'string'
+          "created_by": {
+            "type": "string"
+          },
+          "deletable": {
+            "type": "boolean"
           }
         }
       }
@@ -58,16 +60,20 @@ const getAllMediaSchema = {
 const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.get('/', { schema: getAllMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const userId = request.user.id;
+    const username = request.user.username;
 
     try {
       const rows = fastify.sqlite.prepare(`
         SELECT media.*, users.username,
-          CASE WHEN likes.user_id IS NOT NULL THEN 1 ELSE 0 END AS likedByUser
+          CASE WHEN likes.user_id IS NOT NULL THEN 1 ELSE 0 END AS likedByUser,
+          CASE WHEN media.created_by = ? THEN 1 ELSE 0 END AS deletable
         FROM media
         LEFT JOIN likes ON media.id = likes.media_id AND likes.user_id = ?
         LEFT JOIN users ON media.created_by = users.username
         ORDER BY media.id ASC
-      `).all(userId);
+      `).all(username, userId);
+
+      console.log(rows)
 
       if (rows.length === 0) {
         return reply.status(204).send();

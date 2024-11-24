@@ -8,17 +8,7 @@ import NavBar from './components/NavBar';
 import { getAllMedia } from './api';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-interface MediaItem {
-  id: number;
-  file_name: string;
-  likes: number;
-  url: string;
-  created_at: string;
-  mimetype: string;
-  likedByUser: boolean;
-  created_by: string;
-}
+import { MediaItem } from './types';
 
 const App: React.FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);

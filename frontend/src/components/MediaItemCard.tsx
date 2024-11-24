@@ -31,8 +31,9 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({ item, handleLike, handleU
             </button>
           </div>
           <button
-            onClick={() => confirmDelete(item.id)}
-            className="flex items-center text-red-500 hover:text-red-700 transition"
+            onClick={() => item.deletable && confirmDelete(item.id)}
+            className={`flex items-center ${item.deletable ? 'text-red-500 hover:text-red-700' : 'text-gray-300 cursor-not-allowed'} transition`}
+            disabled={!item.deletable}
           >
             <FaTrash className="mr-1" />
             Delete
