@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { uploadMedia } from '../api';
 
 interface MediaItem {
@@ -19,6 +19,9 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  // Reference to the file input element
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setSelectedFile(event.target.files[0]);
@@ -35,7 +38,12 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
       setUploading(true);
       const uploadedMedia = await uploadMedia(selectedFile);
       addNewMediaItem(uploadedMedia);
+
+      // Reset the file input and selected file state
       setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''; // Clear the file input's value
+      }
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('File upload failed.');
@@ -47,11 +55,14 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
   return (
     <div className="p-4 bg-white shadow rounded-lg max-w-md mx-auto">
       <h2 className="text-lg font-semibold mb-4">Upload Media</h2>
-      <label htmlFor="file-upload" className="mb-2 block text-sm font-medium text-gray-700">Choose file to upload</label>
+      <label htmlFor="file-upload" className="mb-2 block text-sm font-medium text-gray-700">
+        Choose file to upload
+      </label>
       <input
         id="file-upload"
         type="file"
         onChange={handleFileChange}
+        ref={fileInputRef} // Attach the ref to the file input
         className="mb-4 border p-2 w-full"
         placeholder="Choose file"
       />
