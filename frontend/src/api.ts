@@ -12,7 +12,8 @@ export const registerUser = async (username: string, password: string) => {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to register user");
+    const errorData = await response.json();
+    throw new Error(errorData.message);
   }
 
   return response.json();
@@ -28,8 +29,9 @@ export const loginUser = async (username: string, password: string) => {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to login user");
-  }
+    const errorData = await response.json();
+    throw new Error(errorData.message);
+    }
 
   return response.json();
 };
