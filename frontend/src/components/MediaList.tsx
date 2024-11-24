@@ -10,6 +10,7 @@ interface MediaItem {
   created_at: string;
   mimetype: string;
   likedByUser: boolean;
+  created_by: string;
 }
 
 interface MediaListProps {
@@ -85,6 +86,9 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
               />
             )}
             <div className="p-4">
+              <p className="text-sm text-gray-500">
+                Uploaded by: {item.created_by}
+              </p>
               <p className="text-sm text-gray-500">
                 Uploaded on: {new Date(item.created_at).toLocaleDateString()}
               </p>

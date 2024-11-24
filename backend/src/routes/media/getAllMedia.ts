@@ -32,6 +32,9 @@ const getAllMediaSchema = {
           },
           "likedByUser": {
             "type": "boolean"
+          },
+          'created_by': {
+            'type': 'string'
           }
         }
       }
@@ -58,10 +61,11 @@ const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
 
     try {
       const rows = fastify.sqlite.prepare(`
-        SELECT media.*,
+        SELECT media.*, users.username,
           CASE WHEN likes.user_id IS NOT NULL THEN 1 ELSE 0 END AS likedByUser
         FROM media
         LEFT JOIN likes ON media.id = likes.media_id AND likes.user_id = ?
+        LEFT JOIN users ON media.created_by = users.username
         ORDER BY media.id ASC
       `).all(userId);
 

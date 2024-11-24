@@ -22,6 +22,7 @@ const notifyUploadSchema = {
         url: { type: "string" },
         created_at: { type: "string", format: "date-time" },
         mimetype: { type: "string" },
+        created_by: {type: "string"}
       },
     },
   },
@@ -32,6 +33,7 @@ const notifyUpload: FastifyPluginAsync = async (fastify): Promise<void> => {
 
   fastify.post('/notify-upload', { schema: notifyUploadSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { fileName, mimeType } = request.body as { fileName: string; mimeType: string };
+    const mediaCreator = request.user.username;
 
     try {
       const command = new GetObjectCommand({
@@ -40,10 +42,10 @@ const notifyUpload: FastifyPluginAsync = async (fastify): Promise<void> => {
       });
 
       const url = await getSignedUrl(fastify.s3, command);
-      const stmt = fastify.sqlite.prepare('INSERT INTO media (file_name, likes, url, created_at, mimetype) VALUES (?, ?, ?, ?, ?)');
-      const info = stmt.run(fileName, 0, url, new Date().toISOString(), mimeType);
+      const stmt = fastify.sqlite.prepare('INSERT INTO media (file_name, likes, url, created_at, mimetype, created_by) VALUES (?, ?, ?, ?, ?, ?)');
+      const info = stmt.run(fileName, 0, url, new Date().toISOString(), mimeType, mediaCreator);
 
-      return reply.send({ id: info.lastInsertRowid, file_name: fileName, likes: 0, url, created_at: new Date(), mimetype: mimeType });
+      return reply.send({ id: info.lastInsertRowid, file_name: fileName, likes: 0, url, created_at: new Date(), mimetype: mimeType, created_by: mediaCreator });
     } catch (err) {
       return reply.internalServerError('Error notifying upload');
     }
