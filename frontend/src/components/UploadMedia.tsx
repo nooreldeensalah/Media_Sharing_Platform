@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { uploadMedia } from '../api';
+import { toast } from 'react-toastify';
 
 interface MediaItem {
   id: number;
@@ -9,6 +10,7 @@ interface MediaItem {
   created_at: string;
   mimetype: string;
   likedByUser: boolean;
+  created_by: string;
 }
 
 interface UploadMediaProps {
@@ -38,6 +40,7 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
       setUploading(true);
       const uploadedMedia = await uploadMedia(selectedFile);
       addNewMediaItem(uploadedMedia);
+      toast.success('Media uploaded successfully!');
 
       // Reset the file input and selected file state
       setSelectedFile(null);

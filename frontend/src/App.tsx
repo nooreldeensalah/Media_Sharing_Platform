@@ -6,6 +6,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import NavBar from './components/NavBar';
 import { getAllMedia } from './api';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface MediaItem {
   id: number;
@@ -15,6 +17,7 @@ interface MediaItem {
   created_at: string;
   mimetype: string;
   likedByUser: boolean;
+  created_by: string;
 }
 
 const App: React.FC = () => {
@@ -68,6 +71,7 @@ const App: React.FC = () => {
             )} />
           </Routes>
         </main>
+        <ToastContainer />
       </div>
     </Router>
   );
