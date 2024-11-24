@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
-const BASE_URL = "http://192.168.1.11:3000";
+// TODO: I know that this must have been an environment variable, but I can't get to configure it with Vite/Docker Compose
+// TODO: So for the sake of simplicity, I will just submit it like this for now
+const BASE_URL = 'http://localhost:3000';
+// const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const registerUser = async (username: string, password: string) => {
   const response = await fetch(`${BASE_URL}/users/register`, {

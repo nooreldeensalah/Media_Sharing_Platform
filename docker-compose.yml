@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      args:
+        VITE_API_BASE_URL: "http://localhost:3000"
+    ports:
+      - "3000:3000"
+    environment:
+        DATABASE_FILE_NAME: "/app/database/database.sqlite"
+        JWT_SECRET: "supersecret"
+        S3_ACCESS_KEY: "minioadmin"
+        S3_SECRET_KEY: "minioadmin"
+        S3_REGION: "us-east-1"
+        S3_ENDPOINT: "http://localhost:9000"
+        BUCKET_NAME: "media"
+    volumes:
+      - ./backend/database:/app/database
+    depends_on:
+      - minio
+    network_mode: "host"
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      VITE_API_BASE_URL: "http://localhost:3000"
+    ports:
+      - "80:80"
+
+  minio:
+    image: minio/minio
+    network_mode: "host"
+    environment:
+      MINIO_ROOT_USER: "minioadmin"
+      MINIO_ROOT_PASSWORD: "minioadmin"
+    command: server /data
+    volumes:
+      - minio-data:/data
+
+volumes:
+  minio-data:
