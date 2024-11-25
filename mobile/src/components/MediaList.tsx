@@ -98,8 +98,10 @@ const MediaList: React.FC<MediaListProps> = ({
           ) : (
             <Image source={{ uri: item.url }} style={styles.mediaImage} />
           )}
-          <Text style={styles.mediaTitle}>{item.file_name}</Text>
-          <Text style={styles.mediaLikes}>Likes: {item.likes}</Text>
+          <Text style={styles.mediaText}>
+            Uploaded by: <Text style={styles.boldText}>{item.created_by}</Text>
+          </Text>
+          <Text style={styles.mediaText}>Likes: {item.likes}</Text>
           <View style={styles.mediaActions}>
             <TouchableOpacity
               onPress={() =>
@@ -143,17 +145,13 @@ const styles = StyleSheet.create({
   mediaText: {
     color: "gray",
   },
+  boldText: {
+    fontWeight: "bold",
+  },
   mediaImage: {
     width: "100%",
     height: 160,
-  },
-  mediaTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginTop: 8,
-  },
-  mediaLikes: {
-    color: "gray",
+    resizeMode: "contain",
   },
   mediaActions: {
     flexDirection: "row",
