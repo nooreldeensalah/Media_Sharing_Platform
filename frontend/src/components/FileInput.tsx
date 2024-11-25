@@ -8,7 +8,7 @@ interface FileInputProps {
 const FileInput: React.FC<FileInputProps> = ({ handleFileChange, fileInputRef }) => {
   return (
     <>
-      <label htmlFor="file-upload" className="mb-2 block text-sm font-medium text-gray-700">
+      <label htmlFor="file-upload" className="sr-only">
         Choose file to upload
       </label>
       <input
@@ -16,8 +16,7 @@ const FileInput: React.FC<FileInputProps> = ({ handleFileChange, fileInputRef })
         type="file"
         onChange={handleFileChange}
         ref={fileInputRef}
-        className="mb-4 border p-2 w-full"
-        placeholder="Choose file"
+        className="hidden"
       />
     </>
   );

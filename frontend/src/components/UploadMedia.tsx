@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { uploadMedia } from '../api';
 import { toast } from 'react-toastify';
-import FileInput from './FileInput';
 import UploadButton from './UploadButton';
 import { MediaItem } from '../types';
 
@@ -10,29 +9,21 @@ interface UploadMediaProps {
 }
 
 const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setSelectedFile(event.target.files[0]);
+      handleUpload(event.target.files[0]);
     }
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      alert('Please select a file to upload.');
-      return;
-    }
-
+  const handleUpload = async (file: File) => {
     try {
       setUploading(true);
-      const uploadedMedia = await uploadMedia(selectedFile);
+      const uploadedMedia = await uploadMedia(file);
       addNewMediaItem(uploadedMedia);
       toast.success('Media uploaded successfully!');
-      setSelectedFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -44,12 +35,23 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
     }
   };
 
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
-    <div className="p-4 bg-white shadow rounded-lg max-w-md mx-auto">
-      <h2 className="text-lg font-semibold mb-4">Upload Media</h2>
-      <FileInput handleFileChange={handleFileChange} fileInputRef={fileInputRef} />
-      <UploadButton handleUpload={handleUpload} uploading={uploading} />
-    </div>
+    <>
+      <input
+        type="file"
+        onChange={handleFileChange}
+        ref={fileInputRef}
+        className="hidden"
+        title="Upload file"
+      />
+      <UploadButton handleUpload={handleButtonClick} uploading={uploading} />
+    </>
   );
 };
 

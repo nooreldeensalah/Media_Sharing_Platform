@@ -52,8 +52,8 @@ const App: React.FC = () => {
                   <UploadMedia addNewMediaItem={addNewMediaItem} />
                 </section>
                 <section>
-                  <h2 className="text-xl font-semibold mb-4">Your Media Gallery</h2>
-                  <MediaList mediaItems={mediaItems} setMediaItems={setMediaItems} />
+                  <h2 className="text-xl font-semibold mb-4">Media Gallery</h2>
+                  <MediaList mediaItems={mediaItems} setMediaItems={setMediaItems} lastItemRef={lastItemRef} />
                 </section>
               </>
             ) : (

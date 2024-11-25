@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaUpload } from 'react-icons/fa';
 
 interface UploadButtonProps {
   handleUpload: () => void;
@@ -9,10 +10,11 @@ const UploadButton: React.FC<UploadButtonProps> = ({ handleUpload, uploading }) 
   return (
     <button
       onClick={handleUpload}
-      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+      className="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition"
       disabled={uploading}
+      title="Upload File"
     >
-      {uploading ? 'Uploading...' : 'Upload'}
+      <FaUpload size={24} />
     </button>
   );
 };
