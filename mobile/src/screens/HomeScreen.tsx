@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAllMedia } from "../api";
 import MediaList from "../components/MediaList";
-import UploadMedia from "../components/UploadMedia";
+import UploadIcon from "../components/UploadIcon";
 
 interface HomeScreenProps {
   setIsAuthenticated: (isAuthenticated: boolean) => void;
@@ -58,12 +58,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to the Media Sharing Platform</Text>
       <Button title="Logout" onPress={handleLogout} />
-      <UploadMedia addNewMediaItem={addNewMediaItem} />
       <MediaList
         mediaItems={mediaItems}
         setMediaItems={setMediaItems}
         currentUser={currentUser}
       />
+      <UploadIcon addNewMediaItem={addNewMediaItem} />
     </View>
   );
 };

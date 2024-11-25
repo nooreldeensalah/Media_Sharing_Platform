@@ -14,9 +14,10 @@ import { FontAwesome } from "@expo/vector-icons";
 interface MediaItem {
   id: number;
   file_name: string;
-  url: string;
-  mimetype: string;
   likes: number;
+  url: string;
+  created_at: string;
+  mimetype: string;
   likedByUser: boolean;
   created_by: string;
 }
@@ -82,7 +83,7 @@ const MediaList: React.FC<MediaListProps> = ({
           style: "destructive",
           onPress: () => handleDelete(id),
         },
-      ]
+      ],
     );
   };
 
@@ -126,6 +127,7 @@ const MediaList: React.FC<MediaListProps> = ({
           </View>
         </View>
       )}
+      contentContainerStyle={styles.listContent}
     />
   );
 };
@@ -157,6 +159,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 8,
+  },
+  listContent: {
+    paddingBottom: 55,
   },
 });
 
