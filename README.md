@@ -10,6 +10,10 @@
   - [Running locally with Docker Compose](#running-locally-with-docker-compose)
     - [1. Build the Containers](#1-build-the-containers)
     - [2. Access the Application](#2-access-the-application)
+    - [3. Running the mobile application](#3-running-the-mobile-application)
+  - [Screenshots](#screenshots)
+    - [Web Application](#web-application)
+    - [Mobile Application](#mobile-application)
   - [Documentation](#documentation)
 
 A full-stack media sharing application where users can upload, view, like, and delete media files. This project includes a **React** frontend, a **Fastify** backend, and **MinIO** as the storage server (compatible with AWS SDK). The backend is secured with JWT-based authentication.
@@ -78,6 +82,8 @@ cd media-sharing-platform
 
 ### 2. Set up Environment Variables
 
+**Backend** environment variables
+
 ```env
 # MinIO Configuration
 S3_ACCESS_KEY=minioadmin
@@ -103,6 +109,9 @@ JWT_SECRET=supersecret
 
 ## Running locally with Docker Compose
 
+> [!IMPORTANT]
+> If you are going to test the mobile application as well, you have to retrieve the local network address and configure the docker compose environment variables as explained in the next section
+
 ### 1. Build the Containers
 
 ```sh
@@ -116,14 +125,30 @@ docker-compose up
 - Backend: `http://localhost:3000`
 - MinIO Console: `http://localhost:9000`
 
+### 3. Running the mobile application
+
+The easiest way to run the mobile application, would be using `Expo Go`
+> [!TIP]
+> Retrieve the local network address using `hostname -I`
+>
+> Create a `.env` file in the `mobile/` directory and set the `EXPO_PUBLIC_API_BASE_URL` environment variable to point out to the backend address on the local network address, (`localhost`) won't be accessible, so use the address `192.168.x.x` instead, which would be exposed by default using the Docker deployment
+>
+> Set the `S3_ENDPOINT` variable in docker compose to match the local network address as well, to be able to access the images from the MinIO bucket.
+
+## Screenshots
+
+### Web Application
+
+![Web App Screenshot](screenshots/web-screenshot.jpg)
+
+### Mobile Application
+
+![Mobile App Screenshot](screenshots/mobile-screenshot.jpg)
+
 ## Documentation
 
 - Documentation is automatically generated using `@fastify/swagger` plugin, which uses JSON schemas, under the hood Fastify uses `ajv` to validate the schemas.
 - Documentation is accessible at `http://localhost:3000/docs`
 
 > [!NOTE]
-> The mobile application is lacking in styling, but I will work on it to improve it.
->
 > I've attempted various non-paid cloud deployment options such as `Fly.io` and `Vercel` but I wasn't impressed with the latency and the cold start so I decided to use Docker Compose instead.
->
-> There is still a room for improvement in various aspects, I will try to work on them after my submission

@@ -12,7 +12,8 @@ services:
         S3_ACCESS_KEY: "minioadmin"
         S3_SECRET_KEY: "minioadmin"
         S3_REGION: "us-east-1"
-        S3_ENDPOINT: "http://localhost:9000"
+        # S3_ENDPOINT: "http://localhost:9000" # This will work fine on the web version, but not on Expo Go
+        S3_ENDPOINT: "http://192.168.1.11:9000" # If you are testing on Expo Go set the address to match your local network, instead of localhost use `hostname -I` to get your local network address
         BUCKET_NAME: "media"
     volumes:
       - ./backend/database:/app/database
