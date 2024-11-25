@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAllMedia } from "../api";
 import MediaList from "../components/MediaList";
 import UploadIcon from "../components/UploadIcon";
+import { useNavigation } from "@react-navigation/native";
+import LogoutButton from "../components/LogoutButton";
 
 interface HomeScreenProps {
   setIsAuthenticated: (isAuthenticated: boolean) => void;
@@ -23,6 +25,7 @@ interface MediaItem {
 const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [currentUser, setCurrentUser] = useState<string>("");
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -45,19 +48,24 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
     fetchCurrentUser();
   }, []);
 
-  const handleLogout = async () => {
+  const handleLogout = React.useCallback(async () => {
     await AsyncStorage.removeItem("token");
     setIsAuthenticated(false);
-  };
+  }, [setIsAuthenticated]);
 
   const addNewMediaItem = (newMedia: MediaItem) => {
     setMediaItems((prevItems) => [...prevItems, newMedia]);
   };
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <LogoutButton onPress={handleLogout} />,
+    });
+  }, [navigation, handleLogout]);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the Media Sharing Platform</Text>
-      <Button title="Logout" onPress={handleLogout} />
+      <Text style={styles.title}>Welcome, {currentUser}</Text>
       <MediaList
         mediaItems={mediaItems}
         setMediaItems={setMediaItems}
@@ -71,14 +79,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     padding: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 12,
     textAlign: "center",
   },
 });
