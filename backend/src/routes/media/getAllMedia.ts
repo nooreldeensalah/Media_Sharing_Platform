@@ -73,8 +73,6 @@ const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
         ORDER BY media.id ASC
       `).all(username, userId);
 
-      console.log(rows)
-
       if (rows.length === 0) {
         return reply.status(204).send();
       } else {
