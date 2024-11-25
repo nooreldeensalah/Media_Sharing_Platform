@@ -4,7 +4,7 @@ const BASE_URL = "http://192.168.1.11:3000";
 
 const getAuthHeaders = async () => {
   const token = await AsyncStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  return token ? { Authorization: `Bearer ${token}` } : undefined;
 };
 
 export const registerUser = async (username: string, password: string) => {
@@ -35,7 +35,7 @@ export const loginUser = async (username: string, password: string) => {
   if (!response.ok) {
     throw new Error("Failed to login user");
   }
-
+  await AsyncStorage.setItem("username", username);
   return response.json();
 };
 

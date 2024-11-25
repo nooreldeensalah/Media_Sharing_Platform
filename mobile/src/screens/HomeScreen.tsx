@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet, FlatList } from "react-native";
+import { View, Text, Button, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAllMedia } from "../api";
 import MediaList from "../components/MediaList";
@@ -17,10 +17,12 @@ interface MediaItem {
   created_at: string;
   mimetype: string;
   likedByUser: boolean;
+  created_by: string;
 }
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [currentUser, setCurrentUser] = useState<string>("");
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -32,7 +34,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
       }
     };
 
+    const fetchCurrentUser = async () => {
+      const user = await AsyncStorage.getItem("username");
+      if (user) {
+        setCurrentUser(user);
+      }
+    };
+
     fetchMedia();
+    fetchCurrentUser();
   }, []);
 
   const handleLogout = async () => {
@@ -49,7 +59,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
       <Text style={styles.title}>Welcome to the Media Sharing Platform</Text>
       <Button title="Logout" onPress={handleLogout} />
       <UploadMedia addNewMediaItem={addNewMediaItem} />
-      <MediaList mediaItems={mediaItems} setMediaItems={setMediaItems} />
+      <MediaList
+        mediaItems={mediaItems}
+        setMediaItems={setMediaItems}
+        currentUser={currentUser}
+      />
     </View>
   );
 };

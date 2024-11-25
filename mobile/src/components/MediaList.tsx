@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  Alert,
 } from "react-native";
-import { likeMedia, unlikeMedia } from "../api";
+import { likeMedia, unlikeMedia, deleteMedia } from "../api";
 import { FontAwesome } from "@expo/vector-icons";
 
 interface MediaItem {
@@ -17,14 +18,20 @@ interface MediaItem {
   mimetype: string;
   likes: number;
   likedByUser: boolean;
+  created_by: string;
 }
 
 interface MediaListProps {
   mediaItems: MediaItem[];
   setMediaItems: React.Dispatch<React.SetStateAction<MediaItem[]>>;
+  currentUser: string;
 }
 
-const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
+const MediaList: React.FC<MediaListProps> = ({
+  mediaItems,
+  setMediaItems,
+  currentUser,
+}) => {
   const handleLike = async (id: number) => {
     try {
       await likeMedia(id);
@@ -55,6 +62,30 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteMedia(id);
+      setMediaItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Error deleting media:", error);
+    }
+  };
+
+  const confirmDelete = (id: number) => {
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this media item?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => handleDelete(id),
+        },
+      ]
+    );
+  };
+
   return (
     <FlatList
       data={mediaItems}
@@ -78,6 +109,18 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
                 name={item.likedByUser ? "heart" : "heart-o"}
                 size={24}
                 color={item.likedByUser ? "red" : "gray"}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                item.created_by === currentUser && confirmDelete(item.id)
+              }
+              disabled={item.created_by !== currentUser}
+            >
+              <FontAwesome
+                name="trash"
+                size={24}
+                color={item.created_by === currentUser ? "red" : "gray"}
               />
             </TouchableOpacity>
           </View>
