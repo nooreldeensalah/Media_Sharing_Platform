@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { flushSync } from 'react-dom';
 import MediaList from './components/MediaList';
 import UploadMedia from './components/UploadMedia';
 import Login from './components/Login';
@@ -13,6 +14,7 @@ import { MediaItem } from './types';
 const App: React.FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!localStorage.getItem('token'));
+  const lastItemRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -30,7 +32,13 @@ const App: React.FC = () => {
   }, [isAuthenticated]);
 
   const addNewMediaItem = (newMedia: MediaItem) => {
-    setMediaItems((prevItems) => [...prevItems, newMedia]);
+    flushSync(() => {
+      setMediaItems((prevItems) => [...prevItems, newMedia]);
+    });
+
+    if (lastItemRef.current) {
+      lastItemRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleLogout = () => {

@@ -7,9 +7,10 @@ import { MediaItem } from "../types";
 interface MediaListProps {
   mediaItems: MediaItem[];
   setMediaItems: React.Dispatch<React.SetStateAction<MediaItem[]>>;
+  lastItemRef: React.RefObject<HTMLDivElement>;
 }
 
-const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
+const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems, lastItemRef }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
@@ -62,14 +63,18 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems }) => {
   return (
     <>
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {mediaItems.map((item) => (
-          <MediaItemCard
+        {mediaItems.map((item, index) => (
+          <div
             key={item.id}
-            item={item}
-            handleLike={handleLike}
-            handleUnlike={handleUnlike}
-            confirmDelete={confirmDelete}
-          />
+            ref={index === mediaItems.length - 1 ? lastItemRef : null}
+          >
+            <MediaItemCard
+              item={item}
+              handleLike={handleLike}
+              handleUnlike={handleUnlike}
+              confirmDelete={confirmDelete}
+            />
+          </div>
         ))}
       </div>
       <DeleteConfirmationModal
