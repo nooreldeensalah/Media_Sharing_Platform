@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
+import { Video, ResizeMode } from "expo-av";
 import { likeMedia, unlikeMedia, deleteMedia } from "../api";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -97,38 +98,47 @@ const MediaList: React.FC<MediaListProps> = ({
       renderItem={({ item }) => (
         <View style={styles.mediaItem}>
           {item.mimetype.startsWith("video") ? (
-            <Text style={styles.mediaText}>Video: {item.file_name}</Text>
+            <Video
+              source={{ uri: item.url }}
+              style={styles.mediaVideo}
+              useNativeControls
+              resizeMode={ResizeMode.CONTAIN}
+              isLooping
+              shouldPlay
+            />
           ) : (
             <Image source={{ uri: item.url }} style={styles.mediaImage} />
           )}
-          <Text style={styles.mediaText}>
-            Uploaded by: <Text style={styles.boldText}>{item.created_by}</Text>
-          </Text>
-          <Text style={styles.mediaText}>Likes: {item.likes}</Text>
-          <View style={styles.mediaActions}>
-            <TouchableOpacity
-              onPress={() =>
-                item.likedByUser ? handleUnlike(item.id) : handleLike(item.id)
-              }
-            >
-              <FontAwesome
-                name={item.likedByUser ? "heart" : "heart-o"}
-                size={24}
-                color={item.likedByUser ? "red" : "gray"}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() =>
-                item.created_by === currentUser && confirmDelete(item.id)
-              }
-              disabled={item.created_by !== currentUser}
-            >
-              <FontAwesome
-                name="trash"
-                size={24}
-                color={item.created_by === currentUser ? "red" : "gray"}
-              />
-            </TouchableOpacity>
+          <View>
+            <Text style={styles.mediaText}>
+              Uploaded by: <Text style={styles.boldText}>{item.created_by}</Text>
+            </Text>
+            <Text style={styles.mediaText}>Likes: {item.likes}</Text>
+            <View style={styles.mediaActions}>
+              <TouchableOpacity
+                onPress={() =>
+                  item.likedByUser ? handleUnlike(item.id) : handleLike(item.id)
+                }
+              >
+                <FontAwesome
+                  name={item.likedByUser ? "heart" : "heart-o"}
+                  size={24}
+                  color={item.likedByUser ? "red" : "gray"}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  item.created_by === currentUser && confirmDelete(item.id)
+                }
+                disabled={item.created_by !== currentUser}
+              >
+                <FontAwesome
+                  name="trash"
+                  size={24}
+                  color={item.created_by === currentUser ? "red" : "gray"}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       )}
@@ -155,6 +165,10 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 160,
     resizeMode: "contain",
+  },
+  mediaVideo: {
+    width: "100%",
+    height: 160,
   },
   mediaActions: {
     flexDirection: "row",

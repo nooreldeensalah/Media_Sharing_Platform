@@ -21,7 +21,8 @@
     "react-native": "0.76.3",
     "react-native-web": "~0.19.13",
     "@react-native-async-storage/async-storage": "1.23.1",
-    "@expo/vector-icons": "^14.0.2"
+    "@expo/vector-icons": "^14.0.2",
+    "expo-av": "~15.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
