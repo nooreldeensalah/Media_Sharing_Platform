@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 
 
 const registerSchema = {
+  tags: ["users"],
   body: {
     type: 'object',
     required: ['username', 'password'],
@@ -31,6 +32,7 @@ const registerSchema = {
 };
 
 const loginSchema = {
+  tags: ["users"],
   body: {
     type: 'object',
     required: ['username', 'password'],
