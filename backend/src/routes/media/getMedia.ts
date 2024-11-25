@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 
 const getMediaSchema = {
   "tags": ["media"],
-  "summary": "Get a presigned URL for a media file",
+  "summary": "Get a pre-signed URL for a media file",
   "params": {
     "type": "object",
     "properties": {

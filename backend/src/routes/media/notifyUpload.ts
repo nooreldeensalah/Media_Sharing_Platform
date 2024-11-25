@@ -12,6 +12,7 @@ const notifyUploadSchema = {
       mimeType: { type: "string" },
     },
   },
+  summary: "Notify backend server of media uploads to S3",
   response: {
     200: {
       type: "object",

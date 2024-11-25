@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 
 const registerSchema = {
   tags: ["users"],
+  summary: "User registration endpoint",
   body: {
     type: 'object',
     required: ['username', 'password'],
@@ -33,6 +34,7 @@ const registerSchema = {
 
 const loginSchema = {
   tags: ["users"],
+  summary: 'User login endpoint',
   body: {
     type: 'object',
     required: ['username', 'password'],

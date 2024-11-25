@@ -12,6 +12,7 @@ const getPreSignedPutURLSchema = {
       mimeType: { type: 'string' }
     }
   },
+  summary: 'Get a pre-signed URL for uploading a file to S3',
   response: {
     200: {
       type: 'object',
