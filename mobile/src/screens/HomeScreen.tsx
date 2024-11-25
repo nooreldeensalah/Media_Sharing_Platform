@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAllMedia } from "../api";
@@ -6,6 +6,7 @@ import MediaList from "../components/MediaList";
 import UploadIcon from "../components/UploadIcon";
 import { useNavigation } from "@react-navigation/native";
 import LogoutButton from "../components/LogoutButton";
+import { FlatList } from "react-native";
 
 interface HomeScreenProps {
   setIsAuthenticated: (isAuthenticated: boolean) => void;
@@ -26,6 +27,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [currentUser, setCurrentUser] = useState<string>("");
   const navigation = useNavigation();
+  const listRef = useRef<FlatList>(null);
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -53,8 +55,17 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
     setIsAuthenticated(false);
   }, [setIsAuthenticated]);
 
+  // NOTE: `flushSync` isn't available in React Native
+  // So instead of using `UseEffect` which I believe should be reserved for external side effects (not user events)
+  // I will use the setTimeOut solution here, probably not the most elegant solution but it works
   const addNewMediaItem = (newMedia: MediaItem) => {
-    setMediaItems((prevItems) => [...prevItems, newMedia]);
+    setMediaItems((prevItems) => {
+      const updatedItems = [...prevItems, newMedia];
+      setTimeout(() => {
+        listRef.current?.scrollToEnd({ animated: true });
+      }, 0);
+      return updatedItems;
+    });
   };
 
   React.useLayoutEffect(() => {
@@ -70,6 +81,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
         mediaItems={mediaItems}
         setMediaItems={setMediaItems}
         currentUser={currentUser}
+        listRef={listRef} // Pass the reference
       />
       <UploadIcon addNewMediaItem={addNewMediaItem} />
     </View>

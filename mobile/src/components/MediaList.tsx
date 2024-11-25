@@ -26,12 +26,14 @@ interface MediaListProps {
   mediaItems: MediaItem[];
   setMediaItems: React.Dispatch<React.SetStateAction<MediaItem[]>>;
   currentUser: string;
+  listRef: React.RefObject<FlatList<MediaItem>>;
 }
 
 const MediaList: React.FC<MediaListProps> = ({
   mediaItems,
   setMediaItems,
   currentUser,
+  listRef,
 }) => {
   const handleLike = async (id: number) => {
     try {
@@ -90,6 +92,7 @@ const MediaList: React.FC<MediaListProps> = ({
   return (
     <FlatList
       data={mediaItems}
+      ref={listRef}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <View style={styles.mediaItem}>
