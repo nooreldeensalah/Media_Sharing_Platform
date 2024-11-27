@@ -5,6 +5,13 @@ import bcrypt from 'bcrypt';
 const registerSchema = {
   tags: ["users"],
   summary: "User registration endpoint",
+  errorMessage: {
+    body: {
+      properties: {
+        password: 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character'
+      }
+    }
+  },
   body: {
     type: 'object',
     required: ['username', 'password'],
