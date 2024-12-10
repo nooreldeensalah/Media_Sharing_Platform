@@ -1,5 +1,8 @@
 # Use the official Node.js image as the base image
-FROM node:lts
+FROM node:alpine
+
+# Install required packages to work with better-sqlite3 npm package
+RUN apk add g++ make python3
 
 # Set the working directory
 WORKDIR /app
