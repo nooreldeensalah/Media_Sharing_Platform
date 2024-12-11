@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../api';
 import { toast } from 'react-toastify';
+import PasswordStrengthIndicator from './PasswordStrengthIndicator';
+import { checkPasswordStrength } from '../utils/passwordUtils';
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
+
+  const passwordStrength = checkPasswordStrength(password)
+  const isPasswordValid = password && Object.values(passwordStrength).every(Boolean);
+  const passwordsMatch = password === confirmPassword && password !== '';
 
   const handleRegister = async () => {
     try {
@@ -35,7 +42,28 @@ const Register: React.FC = () => {
         onChange={(e) => setPassword(e.target.value)}
         className="w-full p-2 mb-4 border rounded"
       />
-      <button onClick={handleRegister} className="w-full bg-blue-500 text-white p-2 rounded">
+      <div className="relative">
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className={`w-full p-2 mb-1 border rounded ${
+            confirmPassword && !passwordsMatch ? 'border-red-500' : ''
+          }`}
+        />
+        {confirmPassword && !passwordsMatch && (
+          <p className="text-red-500 text-xs mb-4">Passwords do not match</p>
+        )}
+      </div>
+
+      <PasswordStrengthIndicator strength={passwordStrength} />
+
+      <button
+        onClick={handleRegister}
+        disabled={!isPasswordValid || !passwordsMatch || !username}
+        className="w-full bg-blue-500 text-white p-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+      >
         Register
       </button>
     </div>
