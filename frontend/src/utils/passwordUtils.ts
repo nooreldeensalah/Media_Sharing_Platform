@@ -7,5 +7,3 @@ export const checkPasswordStrength = (pwd: string) => {
 
   return { hasLength, hasUpper, hasLower, hasNumber, hasSpecial };
 };
-
-export type PasswordStrength = ReturnType<typeof checkPasswordStrength>;

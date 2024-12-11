@@ -1,9 +1,5 @@
 import React from 'react';
-
-interface NavBarProps {
-  isAuthenticated: boolean;
-  handleLogout: () => void;
-}
+import { NavBarProps } from '../types';
 
 const NavBar: React.FC<NavBarProps> = ({ isAuthenticated, handleLogout }) => {
   return (

@@ -1,13 +1,6 @@
 import React from 'react';
 import { FaHeart, FaRegHeart, FaTrash } from 'react-icons/fa';
-import { MediaItem } from '../types';
-
-interface MediaItemCardProps {
-  item: MediaItem;
-  handleLike: (id: number) => void;
-  handleUnlike: (id: number) => void;
-  confirmDelete: (id: number) => void;
-}
+import { MediaItemCardProps } from '../types';
 
 const MediaItemCard: React.FC<MediaItemCardProps> = ({ item, handleLike, handleUnlike, confirmDelete }) => {
   return (

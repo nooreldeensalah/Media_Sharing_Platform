@@ -2,11 +2,7 @@ import React, { useState, useRef } from 'react';
 import { uploadMedia } from '../api';
 import { toast } from 'react-toastify';
 import UploadButton from './UploadButton';
-import { MediaItem } from '../types';
-
-interface UploadMediaProps {
-  addNewMediaItem: (newMedia: MediaItem) => void;
-}
+import { UploadMediaProps } from '../types';
 
 const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
   const [uploading, setUploading] = useState(false);

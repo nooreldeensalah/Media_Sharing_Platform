@@ -1,10 +1,6 @@
 import React from 'react';
 import { FaUpload } from 'react-icons/fa';
-
-interface UploadButtonProps {
-  handleUpload: () => void;
-  uploading: boolean;
-}
+import { UploadButtonProps } from '../types';
 
 const UploadButton: React.FC<UploadButtonProps> = ({ handleUpload, uploading }) => {
   return (

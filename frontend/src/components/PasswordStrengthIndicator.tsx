@@ -1,9 +1,6 @@
 import React from 'react';
-import { PasswordStrength } from '../utils/passwordUtils';
-
-interface PasswordStrengthIndicatorProps {
-  strength: PasswordStrength;
-}
+import { PasswordStrength } from "../types";
+import { PasswordStrengthIndicatorProps } from '../types';
 
 const requirements = [
   { key: 'hasUpper', label: 'One uppercase letter' },

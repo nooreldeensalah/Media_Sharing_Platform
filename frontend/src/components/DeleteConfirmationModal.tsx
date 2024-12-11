@@ -1,10 +1,5 @@
 import React from 'react';
-
-interface DeleteConfirmationModalProps {
-  showModal: boolean;
-  setShowModal: (show: boolean) => void;
-  handleDelete: () => void;
-}
+import { DeleteConfirmationModalProps } from '../types';
 
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({ showModal, setShowModal, handleDelete }) => {
   if (!showModal) return null;

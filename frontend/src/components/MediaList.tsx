@@ -2,13 +2,7 @@ import React, { useState } from "react";
 import { deleteMedia, likeMedia, unlikeMedia } from "../api";
 import MediaItemCard from "./MediaItemCard";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
-import { MediaItem } from "../types";
-
-interface MediaListProps {
-  mediaItems: MediaItem[];
-  setMediaItems: React.Dispatch<React.SetStateAction<MediaItem[]>>;
-  lastItemRef: React.RefObject<HTMLDivElement>;
-}
+import { MediaListProps } from "../types";
 
 const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems, lastItemRef }) => {
   const [showModal, setShowModal] = useState(false);

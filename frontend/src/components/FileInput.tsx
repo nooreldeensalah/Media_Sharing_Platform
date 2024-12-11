@@ -1,9 +1,5 @@
 import React from 'react';
-
-interface FileInputProps {
-  handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  fileInputRef: React.RefObject<HTMLInputElement>;
-}
+import { FileInputProps } from '../types';
 
 const FileInput: React.FC<FileInputProps> = ({ handleFileChange, fileInputRef }) => {
   return (

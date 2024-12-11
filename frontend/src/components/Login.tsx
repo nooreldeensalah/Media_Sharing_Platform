@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { loginUser } from '../api';
 import { toast } from 'react-toastify';
+import { LoginProps } from '../types';
 
-interface LoginProps {
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
-}
 
 const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState('');
