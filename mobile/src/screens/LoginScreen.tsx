@@ -10,16 +10,14 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginUser } from "../api";
-
-interface LoginScreenProps {
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
-}
+import { NavigationProp } from "../types";
+import { LoginScreenProps } from "../types";
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
 
   const handleLogin = async () => {
     try {

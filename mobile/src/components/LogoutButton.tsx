@@ -1,10 +1,7 @@
 // src/components/LogoutButton.tsx
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
-
-interface LogoutButtonProps {
-  onPress: () => void;
-}
+import { LogoutButtonProps } from "../types";
 
 const LogoutButton: React.FC<LogoutButtonProps> = ({ onPress }) => {
   return (

@@ -11,24 +11,7 @@ import {
 import { Video, ResizeMode } from "expo-av";
 import { likeMedia, unlikeMedia, deleteMedia } from "../api";
 import { FontAwesome } from "@expo/vector-icons";
-
-interface MediaItem {
-  id: number;
-  file_name: string;
-  likes: number;
-  url: string;
-  created_at: string;
-  mimetype: string;
-  likedByUser: boolean;
-  created_by: string;
-}
-
-interface MediaListProps {
-  mediaItems: MediaItem[];
-  setMediaItems: React.Dispatch<React.SetStateAction<MediaItem[]>>;
-  currentUser: string;
-  listRef: React.RefObject<FlatList<MediaItem>>;
-}
+import { MediaListProps } from "../types";
 
 const MediaList: React.FC<MediaListProps> = ({
   mediaItems,
@@ -111,7 +94,8 @@ const MediaList: React.FC<MediaListProps> = ({
           )}
           <View>
             <Text style={styles.mediaText}>
-              Uploaded by: <Text style={styles.boldText}>{item.created_by}</Text>
+              Uploaded by:{" "}
+              <Text style={styles.boldText}>{item.created_by}</Text>
             </Text>
             <Text style={styles.mediaText}>Likes: {item.likes}</Text>
             <View style={styles.mediaActions}>

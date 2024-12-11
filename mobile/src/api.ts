@@ -55,7 +55,7 @@ export const getAllMedia = async () => {
 export const uploadMedia = async (
   file: Blob,
   mimeType: string,
-  fileName: string
+  fileName: string,
 ) => {
   // Step 1: Request a pre-signed PUT URL from the backend
   const preSignedResponse = await fetch(`${BASE_URL}/media/upload-url`, {

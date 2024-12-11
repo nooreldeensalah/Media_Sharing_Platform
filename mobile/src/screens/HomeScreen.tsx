@@ -7,26 +7,13 @@ import UploadIcon from "../components/UploadIcon";
 import { useNavigation } from "@react-navigation/native";
 import LogoutButton from "../components/LogoutButton";
 import { FlatList } from "react-native";
-
-interface HomeScreenProps {
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
-}
-
-interface MediaItem {
-  id: number;
-  file_name: string;
-  likes: number;
-  url: string;
-  created_at: string;
-  mimetype: string;
-  likedByUser: boolean;
-  created_by: string;
-}
+import { NavigationProp, MediaItem } from "../types";
+import { HomeScreenProps } from "../types";
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [currentUser, setCurrentUser] = useState<string>("");
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const listRef = useRef<FlatList>(null);
 
   useEffect(() => {
@@ -81,7 +68,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
         mediaItems={mediaItems}
         setMediaItems={setMediaItems}
         currentUser={currentUser}
-        listRef={listRef} // Pass the reference
+        listRef={listRef}
       />
       <UploadIcon addNewMediaItem={addNewMediaItem} />
     </View>

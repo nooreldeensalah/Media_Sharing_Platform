@@ -11,13 +11,14 @@ import { useNavigation } from "@react-navigation/native";
 import { registerUser } from "../api";
 import PasswordStrengthIndicator from "../components/PasswordStrengthIndicator";
 import { checkPasswordStrength } from "../utils/passwordUtils";
+import { NavigationProp } from "../types";
 
 const RegisterScreen: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
 
   const passwordStrength = checkPasswordStrength(password);
   const isPasswordValid =

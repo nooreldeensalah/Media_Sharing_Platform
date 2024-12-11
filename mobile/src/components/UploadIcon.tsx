@@ -3,10 +3,7 @@ import { TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { uploadMedia } from "../api";
-
-interface UploadIconProps {
-  addNewMediaItem: (newMedia: any) => void;
-}
+import { UploadIconProps } from "../types";
 
 const UploadIcon: React.FC<UploadIconProps> = ({ addNewMediaItem }) => {
   const handleUpload = async () => {
