@@ -9,12 +9,20 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { registerUser } from "../api";
+import PasswordStrengthIndicator from "../components/PasswordStrengthIndicator";
+import { checkPasswordStrength } from "../utils/passwordUtils";
 
 const RegisterScreen: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const navigation = useNavigation();
+
+  const passwordStrength = checkPasswordStrength(password);
+  const isPasswordValid =
+    password && Object.values(passwordStrength).every(Boolean);
+  const passwordsMatch = password === confirmPassword && password !== "";
 
   const handleRegister = async () => {
     try {
@@ -43,7 +51,25 @@ const RegisterScreen: React.FC = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Register" onPress={handleRegister} />
+      <TextInput
+        style={[
+          styles.input,
+          confirmPassword && !passwordsMatch ? styles.inputError : null,
+        ]}
+        placeholder="Confirm Password"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureTextEntry
+      />
+      {confirmPassword && !passwordsMatch && (
+        <Text style={styles.error}>Passwords do not match</Text>
+      )}
+      <PasswordStrengthIndicator strength={passwordStrength} />
+      <Button
+        title="Register"
+        onPress={handleRegister}
+        disabled={!isPasswordValid || !passwordsMatch || !username}
+      />
       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
         <Text style={styles.link}>Already registered? Login here</Text>
       </TouchableOpacity>
@@ -69,6 +95,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
+  },
+  inputError: {
+    borderColor: "red",
   },
   error: {
     color: "red",
