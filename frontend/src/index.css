@@ -4,17 +4,18 @@
 
 /* Custom global styles */
 body {
-    @apply bg-gray-100 text-gray-800 font-sans antialiased;
+  @apply bg-gray-100 text-gray-800 font-sans antialiased;
 }
 
-h1, h2 {
-    @apply font-bold text-center text-gray-800;
+h1,
+h2 {
+  @apply font-bold text-center text-gray-800;
 }
 
 button {
-    @apply transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2;
+  @apply transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2;
 }
 
-input[type='file'] {
-    @apply cursor-pointer text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100;
+input[type="file"] {
+  @apply cursor-pointer text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100;
 }

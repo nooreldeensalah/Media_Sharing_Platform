@@ -4,7 +4,11 @@ import MediaItemCard from "./MediaItemCard";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { MediaListProps } from "../types";
 
-const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems, lastItemRef }) => {
+const MediaList: React.FC<MediaListProps> = ({
+  mediaItems,
+  setMediaItems,
+  lastItemRef,
+}) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
@@ -13,8 +17,10 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems, lastIt
       await likeMedia(id);
       setMediaItems((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, likes: item.likes + 1, likedByUser: true } : item
-        )
+          item.id === id
+            ? { ...item, likes: item.likes + 1, likedByUser: true }
+            : item,
+        ),
       );
     } catch (error) {
       console.error("Error liking media:", error);
@@ -26,8 +32,10 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems, lastIt
       await unlikeMedia(id);
       setMediaItems((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, likes: item.likes - 1, likedByUser: false } : item
-        )
+          item.id === id
+            ? { ...item, likes: item.likes - 1, likedByUser: false }
+            : item,
+        ),
       );
     } catch (error) {
       console.error("Error unliking media:", error);
@@ -44,7 +52,9 @@ const MediaList: React.FC<MediaListProps> = ({ mediaItems, setMediaItems, lastIt
     try {
       const response = await deleteMedia(selectedItemId);
       if (response?.message) {
-        setMediaItems((prev) => prev.filter((item) => item.id !== selectedItemId));
+        setMediaItems((prev) =>
+          prev.filter((item) => item.id !== selectedItemId),
+        );
         setShowModal(false);
         setSelectedItemId(null);
       }

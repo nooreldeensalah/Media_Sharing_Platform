@@ -1,25 +1,26 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../api';
-import { toast } from 'react-toastify';
-import PasswordStrengthIndicator from './PasswordStrengthIndicator';
-import { checkPasswordStrength } from '../utils/passwordUtils';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../api";
+import { toast } from "react-toastify";
+import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
+import { checkPasswordStrength } from "../utils/passwordUtils";
 
 const Register: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
-  const passwordStrength = checkPasswordStrength(password)
-  const isPasswordValid = password && Object.values(passwordStrength).every(Boolean);
-  const passwordsMatch = password === confirmPassword && password !== '';
+  const passwordStrength = checkPasswordStrength(password);
+  const isPasswordValid =
+    password && Object.values(passwordStrength).every(Boolean);
+  const passwordsMatch = password === confirmPassword && password !== "";
 
   const handleRegister = async () => {
     try {
       await registerUser(username, password);
-      toast.success('Registration successful! Please log in.');
-      navigate('/login');
+      toast.success("Registration successful! Please log in.");
+      navigate("/login");
     } catch (err) {
       toast.error((err as Error).message);
     }
@@ -49,7 +50,7 @@ const Register: React.FC = () => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           className={`w-full p-2 mb-1 border rounded ${
-            confirmPassword && !passwordsMatch ? 'border-red-500' : ''
+            confirmPassword && !passwordsMatch ? "border-red-500" : ""
           }`}
         />
         {confirmPassword && !passwordsMatch && (

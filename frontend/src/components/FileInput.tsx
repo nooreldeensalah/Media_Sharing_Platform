@@ -1,7 +1,10 @@
-import React from 'react';
-import { FileInputProps } from '../types';
+import React from "react";
+import { FileInputProps } from "../types";
 
-const FileInput: React.FC<FileInputProps> = ({ handleFileChange, fileInputRef }) => {
+const FileInput: React.FC<FileInputProps> = ({
+  handleFileChange,
+  fileInputRef,
+}) => {
   return (
     <>
       <label htmlFor="file-upload" className="sr-only">

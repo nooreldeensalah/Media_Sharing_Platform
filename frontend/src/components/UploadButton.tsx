@@ -1,8 +1,11 @@
-import React from 'react';
-import { FaUpload } from 'react-icons/fa';
-import { UploadButtonProps } from '../types';
+import React from "react";
+import { FaUpload } from "react-icons/fa";
+import { UploadButtonProps } from "../types";
 
-const UploadButton: React.FC<UploadButtonProps> = ({ handleUpload, uploading }) => {
+const UploadButton: React.FC<UploadButtonProps> = ({
+  handleUpload,
+  uploading,
+}) => {
   return (
     <button
       onClick={handleUpload}

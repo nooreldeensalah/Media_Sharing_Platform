@@ -1,22 +1,21 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { loginUser } from '../api';
-import { toast } from 'react-toastify';
-import { LoginProps } from '../types';
-
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { loginUser } from "../api";
+import { toast } from "react-toastify";
+import { LoginProps } from "../types";
 
 const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
       const { token } = await loginUser(username, password);
-      localStorage.setItem('token', token);
+      localStorage.setItem("token", token);
       setIsAuthenticated(true);
       toast.success(`Welcome ${username}!`);
-      navigate('/');
+      navigate("/");
     } catch (err) {
       toast.error((err as Error).message);
     }
@@ -39,11 +38,17 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
         onChange={(e) => setPassword(e.target.value)}
         className="w-full p-2 mb-4 border rounded"
       />
-      <button onClick={handleLogin} className="w-full bg-blue-500 text-white p-2 rounded">
+      <button
+        onClick={handleLogin}
+        className="w-full bg-blue-500 text-white p-2 rounded"
+      >
         Login
       </button>
       <p className="mt-4 text-center">
-        Not registered? <Link to="/register" className="text-blue-500 hover:underline">Register here</Link>
+        Not registered?{" "}
+        <Link to="/register" className="text-blue-500 hover:underline">
+          Register here
+        </Link>
       </p>
     </div>
   );

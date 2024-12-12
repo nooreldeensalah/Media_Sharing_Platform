@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { uploadMedia } from '../api';
-import { toast } from 'react-toastify';
-import UploadButton from './UploadButton';
-import { UploadMediaProps } from '../types';
+import React, { useState, useRef } from "react";
+import { uploadMedia } from "../api";
+import { toast } from "react-toastify";
+import UploadButton from "./UploadButton";
+import { UploadMediaProps } from "../types";
 
 const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
   const [uploading, setUploading] = useState(false);
@@ -19,13 +19,13 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
       setUploading(true);
       const uploadedMedia = await uploadMedia(file);
       addNewMediaItem(uploadedMedia);
-      toast.success('Media uploaded successfully!');
+      toast.success("Media uploaded successfully!");
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     } catch (error) {
-      console.error('Error uploading file:', error);
-      alert('File upload failed.');
+      console.error("Error uploading file:", error);
+      alert("File upload failed.");
     } finally {
       setUploading(false);
     }

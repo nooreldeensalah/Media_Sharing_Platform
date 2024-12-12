@@ -1,15 +1,22 @@
-import React from 'react';
-import { DeleteConfirmationModalProps } from '../types';
+import React from "react";
+import { DeleteConfirmationModalProps } from "../types";
 
-const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({ showModal, setShowModal, handleDelete }) => {
+const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
+  showModal,
+  setShowModal,
+  handleDelete,
+}) => {
   if (!showModal) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirm Deletion</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+          Confirm Deletion
+        </h3>
         <p className="text-sm text-gray-600 mb-6">
-          Are you sure you want to delete this media item? This action cannot be undone.
+          Are you sure you want to delete this media item? This action cannot be
+          undone.
         </p>
         <div className="flex justify-end space-x-4">
           <button

@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -31,13 +31,13 @@ export const loginUser = async (username: string, password: string) => {
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.message);
-    }
+  }
 
   return response.json();
 };
 
 const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : undefined;
 };
 
@@ -104,11 +104,11 @@ export const uploadMedia = async (file: File) => {
 
 export const deleteMedia = async (id: number) => {
   const response = await fetch(`${BASE_URL}/media/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: getAuthHeaders(),
   });
   if (!response.ok) {
-    throw new Error('Failed to delete media');
+    throw new Error("Failed to delete media");
   }
 
   return response.json();
@@ -116,11 +116,11 @@ export const deleteMedia = async (id: number) => {
 
 export const likeMedia = async (id: number) => {
   const response = await fetch(`${BASE_URL}/media/${id}/like`, {
-    method: 'POST',
+    method: "POST",
     headers: getAuthHeaders(),
   });
   if (!response.ok) {
-    throw new Error('Failed to like media');
+    throw new Error("Failed to like media");
   }
 
   return response.json();
@@ -128,11 +128,11 @@ export const likeMedia = async (id: number) => {
 
 export const unlikeMedia = async (id: number) => {
   const response = await fetch(`${BASE_URL}/media/${id}/unlike`, {
-    method: 'POST',
+    method: "POST",
     headers: getAuthHeaders(),
   });
   if (!response.ok) {
-    throw new Error('Failed to unlike media');
+    throw new Error("Failed to unlike media");
   }
 
   return response.json();
