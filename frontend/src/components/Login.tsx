@@ -9,7 +9,8 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       const { token } = await loginUser(username, password);
       localStorage.setItem("token", token);
@@ -24,26 +25,28 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded shadow">
       <h2 className="text-2xl font-bold mb-4">Login</h2>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="w-full p-2 mb-4 border rounded"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full p-2 mb-4 border rounded"
-      />
-      <button
-        onClick={handleLogin}
-        className="w-full bg-blue-500 text-white p-2 rounded"
-      >
-        Login
-      </button>
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+        />
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white p-2 rounded"
+        >
+          Login
+        </button>
+      </form>
       <p className="mt-4 text-center">
         Not registered?{" "}
         <Link to="/register" className="text-blue-500 hover:underline">
