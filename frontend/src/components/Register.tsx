@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api";
 import { toast } from "react-toastify";
@@ -16,7 +16,8 @@ const Register: React.FC = () => {
     password && Object.values(passwordStrength).every(Boolean);
   const passwordsMatch = password === confirmPassword && password !== "";
 
-  const handleRegister = async () => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
       await registerUser(username, password);
       toast.success("Registration successful! Please log in.");
@@ -29,44 +30,49 @@ const Register: React.FC = () => {
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded shadow">
       <h2 className="text-2xl font-bold mb-4">Register</h2>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="w-full p-2 mb-4 border rounded"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full p-2 mb-4 border rounded"
-      />
-      <div className="relative">
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+          required
+        />
         <input
           type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className={`w-full p-2 mb-1 border rounded ${
-            confirmPassword && !passwordsMatch ? "border-red-500" : ""
-          }`}
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+          required
         />
-        {confirmPassword && !passwordsMatch && (
-          <p className="text-red-500 text-xs mb-4">Passwords do not match</p>
-        )}
-      </div>
+        <div className="relative">
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className={`w-full p-2 mb-1 border rounded ${
+              confirmPassword && !passwordsMatch ? "border-red-500" : ""
+            }`}
+            required
+          />
+          {confirmPassword && !passwordsMatch && (
+            <p className="text-red-500 text-xs mb-4">Passwords do not match</p>
+          )}
+        </div>
 
-      <PasswordStrengthIndicator strength={passwordStrength} />
+        <PasswordStrengthIndicator strength={passwordStrength} />
 
-      <button
-        onClick={handleRegister}
-        disabled={!isPasswordValid || !passwordsMatch || !username}
-        className="w-full bg-blue-500 text-white p-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Register
-      </button>
+        <button
+          type="submit"
+          disabled={!isPasswordValid || !passwordsMatch || !username}
+          className="w-full bg-blue-500 text-white p-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Register
+        </button>
+      </form>
     </div>
   );
 };
