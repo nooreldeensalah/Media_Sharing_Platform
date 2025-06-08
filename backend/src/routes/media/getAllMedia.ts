@@ -118,7 +118,7 @@ const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
         FROM media
         LEFT JOIN likes ON media.id = likes.media_id AND likes.user_id = ?
         LEFT JOIN users ON media.created_by = users.username
-        ORDER BY media.created_at ASC, media.id ASC
+        ORDER BY media.created_at DESC, media.id DESC
         LIMIT ? OFFSET ?
       `).all(username, userId, limit, offset);
 

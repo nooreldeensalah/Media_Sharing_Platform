@@ -55,13 +55,17 @@ const App: React.FC = () => {
   const addNewMediaItem = (newMedia: MediaItem) => {
     flushSync(() => {
       setMediaItems((prevItems) => {
-        // Add new item at the end (bottom) instead of beginning
-        const newItems = [...prevItems, newMedia];
-        // If we're on page 1, keep only the page size limit to maintain pagination
-        if (pagination?.currentPage === 1) {
-          return newItems.slice(-pagination.itemsPerPage); // Take last N items
+        // Handle empty bucket scenario (no pagination) or page 1
+        if (!pagination || pagination.currentPage === 1) {
+          // Add at the beginning and maintain page size (default to 10 if no pagination)
+          const newItems = [newMedia, ...prevItems];
+          const itemsPerPage = pagination?.itemsPerPage || 10;
+          return newItems.slice(0, itemsPerPage);
+        } else {
+          // On other pages, don't add the item to the current view
+          // User should go to page 1 to see the new item
+          return prevItems;
         }
-        return newItems;
       });
 
       // Update pagination to reflect the new item
@@ -73,16 +77,23 @@ const App: React.FC = () => {
             totalItems: newTotalItems,
             totalPages: Math.ceil(newTotalItems / prevPagination.itemsPerPage)
           };
+        } else {
+          // Create initial pagination for the first item
+          return {
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: 1,
+            itemsPerPage: 10,
+            hasNextPage: false,
+            hasPreviousPage: false
+          };
         }
-        return prevPagination;
       });
     });
 
-    // Scroll to bottom to show the new item and keep pagination visible
+    // Scroll to top to show the new item
     setTimeout(() => {
-      if (lastItemRef.current) {
-        lastItemRef.current.scrollIntoView({ behavior: "smooth" });
-      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }, 100);
   };
 

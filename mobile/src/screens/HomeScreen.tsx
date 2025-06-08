@@ -43,13 +43,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setIsAuthenticated }) => {
   }, [setIsAuthenticated]);
 
   // NOTE: `flushSync` isn't available in React Native
-  // So instead of using `UseEffect` which I believe should be reserved for external side effects (not user events)
-  // I will use the setTimeOut solution here, probably not the most elegant solution but it works
+  // With DESC ordering (newest first), new items should appear at the top
   const addNewMediaItem = (newMedia: MediaItem) => {
     setMediaItems((prevItems) => {
-      const updatedItems = [...prevItems, newMedia];
+      const updatedItems = [newMedia, ...prevItems];
       setTimeout(() => {
-        listRef.current?.scrollToEnd({ animated: true });
+        listRef.current?.scrollToOffset({ offset: 0, animated: true });
       }, 0);
       return updatedItems;
     });
