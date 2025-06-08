@@ -25,7 +25,7 @@ const getPreSignedPutURLSchema = {
 
 const getPreSignedPutURL: FastifyPluginAsync = async (fastify): Promise<void> => {
   const { BUCKET_NAME } = process.env as { BUCKET_NAME: string };
-  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/mpeg', 'video/quicktime'];
+  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp','image/gif', 'video/mp4', 'video/mpeg', 'video/quicktime'];
 
   const ensureBucketExists = async (bucketName: string) => {
     try {
