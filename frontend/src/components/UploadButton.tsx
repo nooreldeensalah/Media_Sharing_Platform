@@ -9,7 +9,7 @@ const UploadButton: React.FC<UploadButtonProps> = ({
   return (
     <button
       onClick={handleUpload}
-      className="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg z-10 hover:bg-blue-600 transition"
+      className="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg z-50 hover:bg-blue-600 transition-all duration-300"
       disabled={uploading}
       title="Upload File"
       aria-label="Upload File"

@@ -1,8 +1,12 @@
-# Use the official Node.js image as the base image
-FROM node:alpine
+FROM node:22-bullseye-slim
 
-# Install required packages to work with better-sqlite3 npm package
-RUN apk add g++ make python3
+# Install required packages for better-sqlite3 and build tools
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    python3 \
+    sqlite3 \
+    libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
 WORKDIR /app

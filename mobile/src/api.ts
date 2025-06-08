@@ -39,12 +39,15 @@ export const loginUser = async (username: string, password: string) => {
   return response.json();
 };
 
-export const getAllMedia = async () => {
-  const response = await fetch(`${BASE_URL}/media`, {
-    headers: await getAuthHeaders(),
-  });
+export const getAllMedia = async (page: number = 1, limit: number = 20) => {
+  const response = await fetch(
+    `${BASE_URL}/media?page=${page}&limit=${limit}`,
+    {
+      headers: await getAuthHeaders(),
+    },
+  );
   if (response.status === 204) {
-    return [];
+    return { data: [], pagination: null };
   }
   if (!response.ok) {
     throw new Error("Failed to fetch media");

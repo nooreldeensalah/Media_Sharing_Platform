@@ -10,6 +10,20 @@ export interface MediaItem {
   deletable: boolean;
 }
 
+export interface PaginationMetadata {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export interface PaginatedMediaResponse {
+  data: MediaItem[];
+  pagination: PaginationMetadata;
+}
+
 export interface NavBarProps {
   isAuthenticated: boolean;
   handleLogout: () => void;
@@ -23,6 +37,10 @@ export interface MediaListProps {
   mediaItems: MediaItem[];
   setMediaItems: React.Dispatch<React.SetStateAction<MediaItem[]>>;
   lastItemRef: React.RefObject<HTMLDivElement>;
+  pagination?: PaginationMetadata | null;
+  setPagination?: React.Dispatch<React.SetStateAction<PaginationMetadata | null>>;
+  onPageChange?: (page: number) => void;
+  isLoading?: boolean;
 }
 
 export interface FileInputProps {

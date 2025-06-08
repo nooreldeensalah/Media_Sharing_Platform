@@ -14,43 +14,87 @@ import NavBar from "./components/NavBar";
 import { getAllMedia } from "./api";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { MediaItem } from "./types";
+import { MediaItem, PaginationMetadata } from "./types";
 
 const App: React.FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [pagination, setPagination] = useState<PaginationMetadata | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
     !!localStorage.getItem("token"),
   );
   const lastItemRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      const fetchMedia = async () => {
+  const fetchMedia = React.useCallback(
+    async (page: number = 1) => {
+      if (isAuthenticated) {
+        setIsLoading(true);
         try {
-          const mediaData = await getAllMedia();
-          setMediaItems(mediaData);
+          const response = await getAllMedia(page, 10);
+          if (response.data) {
+            setMediaItems(response.data);
+            setPagination(response.pagination);
+          } else {
+            setMediaItems(response);
+            setPagination(null);
+          }
         } catch (error) {
           console.error("Error fetching media:", error);
+        } finally {
+          setIsLoading(false);
         }
-      };
+      }
+    },
+    [isAuthenticated]
+  );
 
-      fetchMedia();
-    }
-  }, [isAuthenticated]);
+  useEffect(() => {
+    fetchMedia(1);
+  }, [isAuthenticated, fetchMedia]);
 
   const addNewMediaItem = (newMedia: MediaItem) => {
     flushSync(() => {
-      setMediaItems((prevItems) => [...prevItems, newMedia]);
+      setMediaItems((prevItems) => {
+        // Add new item at the end (bottom) instead of beginning
+        const newItems = [...prevItems, newMedia];
+        // If we're on page 1, keep only the page size limit to maintain pagination
+        if (pagination?.currentPage === 1) {
+          return newItems.slice(-pagination.itemsPerPage); // Take last N items
+        }
+        return newItems;
+      });
+
+      // Update pagination to reflect the new item
+      setPagination((prevPagination) => {
+        if (prevPagination) {
+          const newTotalItems = prevPagination.totalItems + 1;
+          return {
+            ...prevPagination,
+            totalItems: newTotalItems,
+            totalPages: Math.ceil(newTotalItems / prevPagination.itemsPerPage)
+          };
+        }
+        return prevPagination;
+      });
     });
 
-    if (lastItemRef.current) {
-      lastItemRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    // Scroll to bottom to show the new item and keep pagination visible
+    setTimeout(() => {
+      if (lastItemRef.current) {
+        lastItemRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  };
+
+  const handlePageChange = (page: number) => {
+    fetchMedia(page);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
+    setMediaItems([]);
+    setPagination(null);
   };
 
   return (
@@ -89,6 +133,10 @@ const App: React.FC = () => {
                         mediaItems={mediaItems}
                         setMediaItems={setMediaItems}
                         lastItemRef={lastItemRef}
+                        pagination={pagination}
+                        setPagination={setPagination}
+                        onPageChange={handlePageChange}
+                        isLoading={isLoading}
                       />
                     </section>
                   </>
