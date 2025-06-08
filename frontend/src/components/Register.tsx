@@ -4,6 +4,7 @@ import { registerUser } from "../api";
 import { toast } from "react-toastify";
 import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 import { checkPasswordStrength } from "../utils/passwordUtils";
+import { useDebounce } from "../hooks/useDebounce";
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -11,10 +12,18 @@ const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
+  // Debounce only for error messages to reduce UI noise
+  const debouncedPassword = useDebounce(password, 300);
+  const debouncedConfirmPassword = useDebounce(confirmPassword, 300);
+
+  // Password strength indicator updates immediately for better UX
   const passwordStrength = checkPasswordStrength(password);
-  const isPasswordValid =
-    password && Object.values(passwordStrength).every(Boolean);
+  const isPasswordValid = password && Object.values(passwordStrength).every(Boolean);
   const passwordsMatch = password === confirmPassword && password !== "";
+
+  // Show password mismatch error only after debouncing and if user has typed in both fields
+  const showPasswordMismatch = debouncedConfirmPassword && debouncedPassword &&
+    debouncedPassword !== debouncedConfirmPassword;
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,15 +63,16 @@ const Register: React.FC = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             className={`w-full p-2 mb-1 border rounded ${
-              confirmPassword && !passwordsMatch ? "border-red-500" : ""
+              showPasswordMismatch ? "border-red-500" : ""
             }`}
             required
           />
-          {confirmPassword && !passwordsMatch && (
+          {showPasswordMismatch && (
             <p className="text-red-500 text-xs mb-4">Passwords do not match</p>
           )}
         </div>
 
+        {/* Always show password strength indicator */}
         <PasswordStrengthIndicator strength={passwordStrength} />
 
         <button
