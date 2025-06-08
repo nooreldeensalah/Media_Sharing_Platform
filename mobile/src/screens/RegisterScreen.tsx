@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { registerUser } from "../api";
 import PasswordStrengthIndicator from "../components/PasswordStrengthIndicator";
 import { checkPasswordStrength } from "../utils/passwordUtils";
+import { useDebounce } from "../hooks/useDebounce";
 import { NavigationProp } from "../types";
 
 const RegisterScreen: React.FC = () => {
@@ -20,10 +21,21 @@ const RegisterScreen: React.FC = () => {
   const [error, setError] = useState("");
   const navigation = useNavigation<NavigationProp>();
 
+  // Debounce only for error messages to reduce UI noise
+  const debouncedPassword = useDebounce(password, 300);
+  const debouncedConfirmPassword = useDebounce(confirmPassword, 300);
+
+  // Password strength indicator updates immediately for better UX
   const passwordStrength = checkPasswordStrength(password);
   const isPasswordValid =
     password && Object.values(passwordStrength).every(Boolean);
   const passwordsMatch = password === confirmPassword && password !== "";
+
+  // Show password mismatch error only after debouncing and if user has typed in both fields
+  const showPasswordMismatch =
+    debouncedConfirmPassword &&
+    debouncedPassword &&
+    debouncedPassword !== debouncedConfirmPassword;
 
   const handleRegister = async () => {
     try {
@@ -53,18 +65,16 @@ const RegisterScreen: React.FC = () => {
         secureTextEntry
       />
       <TextInput
-        style={[
-          styles.input,
-          confirmPassword && !passwordsMatch ? styles.inputError : null,
-        ]}
+        style={[styles.input, showPasswordMismatch ? styles.inputError : null]}
         placeholder="Confirm Password"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
       />
-      {confirmPassword && !passwordsMatch && (
+      {showPasswordMismatch && (
         <Text style={styles.error}>Passwords do not match</Text>
       )}
+      {/* Always show password strength indicator */}
       <PasswordStrengthIndicator strength={passwordStrength} />
       <Button
         title="Register"
