@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 
 const registerSchema = {
@@ -82,12 +82,11 @@ const users: FastifyPluginAsync = async (fastify): Promise<void> => {
       stmt.run(username, hashedPassword);
       reply.send({ message: 'User registered successfully' });
     } catch (err) {
-      // TODO: Fix the error type here
-      if ((err as any).code === 'SQLITE_CONSTRAINT_UNIQUE') {
-        reply.badRequest('User already exists');
-      } else {
-        reply.internalServerError('Error registering user');
+      if (err instanceof Error && 'code' in err && err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+        return reply.badRequest('Username already exists');
       }
+      fastify.log.error('Registration error:', err);
+      return reply.internalServerError('Error registering user');
     }
   });
 
