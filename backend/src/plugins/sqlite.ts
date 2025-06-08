@@ -51,6 +51,12 @@ const createLikesTableQuery = `
     db.exec(createMediaTableQuery);
     db.exec(createUsersTableQuery);
     db.exec(createLikesTableQuery);
+
+    // Add performance indexes
+    db.exec('CREATE INDEX IF NOT EXISTS idx_media_created_by ON media(created_by)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_media_created_at ON media(created_at DESC)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_likes_media_id ON likes(media_id)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id)');
   } catch (error) {
     throw new Error('Failed to initialize database schema');
   }
