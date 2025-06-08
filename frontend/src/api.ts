@@ -114,26 +114,19 @@ export const deleteMedia = async (id: number) => {
   return response.json();
 };
 
-export const likeMedia = async (id: number) => {
-  const response = await fetch(`${BASE_URL}/media/${id}/like`, {
+export const toggleLike = async (id: number, action: 'like' | 'unlike') => {
+  const response = await fetch(`${BASE_URL}/media/${id}/toggle-like`, {
     method: "POST",
-    headers: getAuthHeaders(),
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify({ action }),
   });
   if (!response.ok) {
-    throw new Error("Failed to like media");
+    throw new Error(`Failed to ${action} media`);
   }
-
   return response.json();
 };
 
-export const unlikeMedia = async (id: number) => {
-  const response = await fetch(`${BASE_URL}/media/${id}/unlike`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-  });
-  if (!response.ok) {
-    throw new Error("Failed to unlike media");
-  }
 
-  return response.json();
-};

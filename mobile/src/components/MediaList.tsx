@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { Video, ResizeMode } from "expo-av";
-import { likeMedia, unlikeMedia, deleteMedia } from "../api";
+import { toggleLike, deleteMedia } from "../api";
 import { FontAwesome } from "@expo/vector-icons";
 import { MediaListProps } from "../types";
 
@@ -21,11 +21,11 @@ const MediaList: React.FC<MediaListProps> = ({
 }) => {
   const handleLike = async (id: number) => {
     try {
-      await likeMedia(id);
+      const response = await toggleLike(id, "like");
       setMediaItems((prev) =>
         prev.map((item) =>
           item.id === id
-            ? { ...item, likes: item.likes + 1, likedByUser: true }
+            ? { ...item, likes: response.newLikeCount, likedByUser: true }
             : item,
         ),
       );
@@ -36,11 +36,11 @@ const MediaList: React.FC<MediaListProps> = ({
 
   const handleUnlike = async (id: number) => {
     try {
-      await unlikeMedia(id);
+      const response = await toggleLike(id, "unlike");
       setMediaItems((prev) =>
         prev.map((item) =>
           item.id === id
-            ? { ...item, likes: item.likes - 1, likedByUser: false }
+            ? { ...item, likes: response.newLikeCount, likedByUser: false }
             : item,
         ),
       );
