@@ -6,17 +6,33 @@ import {
   Navigate,
 } from "react-router-dom";
 import { flushSync } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import MediaList from "./components/MediaList";
 import UploadMedia from "./components/UploadMedia";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import NavBar from "./components/NavBar";
+import { ErrorBoundary } from "./components/ui/ErrorBoundary";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { getAllMedia } from "./api";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MediaItem, PaginationMetadata } from "./types";
+import "./i18n";
 
 const App: React.FC = () => {
+  return (
+    <ErrorBoundary>
+      <ThemeProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ThemeProvider>
+    </ErrorBoundary>
+  );
+};
+
+const AppContent: React.FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [pagination, setPagination] = useState<PaginationMetadata | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -30,7 +46,7 @@ const App: React.FC = () => {
       if (isAuthenticated) {
         setIsLoading(true);
         try {
-          const response = await getAllMedia(page, 10);
+          const response = await getAllMedia(page, 8);
           if (response.data) {
             setMediaItems(response.data);
             setPagination(response.pagination);
@@ -55,20 +71,15 @@ const App: React.FC = () => {
   const addNewMediaItem = (newMedia: MediaItem) => {
     flushSync(() => {
       setMediaItems((prevItems) => {
-        // Handle empty bucket scenario (no pagination) or page 1
         if (!pagination || pagination.currentPage === 1) {
-          // Add at the beginning and maintain page size (default to 10 if no pagination)
           const newItems = [newMedia, ...prevItems];
           const itemsPerPage = pagination?.itemsPerPage || 10;
           return newItems.slice(0, itemsPerPage);
         } else {
-          // On other pages, don't add the item to the current view
-          // User should go to page 1 to see the new item
           return prevItems;
         }
       });
 
-      // Update pagination to reflect the new item
       setPagination((prevPagination) => {
         if (prevPagination) {
           const newTotalItems = prevPagination.totalItems + 1;
@@ -78,7 +89,6 @@ const App: React.FC = () => {
             totalPages: Math.ceil(newTotalItems / prevPagination.itemsPerPage)
           };
         } else {
-          // Create initial pagination for the first item
           return {
             currentPage: 1,
             totalPages: 1,
@@ -91,9 +101,12 @@ const App: React.FC = () => {
       });
     });
 
-    // Scroll to top to show the new item
+    // Scroll to gallery section to show the new item
     setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const gallerySection = document.getElementById('gallery-section');
+      if (gallerySection) {
+        gallerySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }, 100);
   };
 
@@ -109,58 +122,86 @@ const App: React.FC = () => {
   };
 
   return (
-    <Router>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary-600 text-white px-4 py-2 rounded-lg z-50"
+      >
+        Skip to main content
+      </a>
+
       <div className="min-h-screen flex flex-col items-center p-4">
         <NavBar isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
-        <main className="w-full max-w-5xl space-y-6">
-          <Routes>
-            <Route
-              path="/login"
-              element={
-                isAuthenticated ? (
-                  <Navigate to="/" />
-                ) : (
-                  <Login setIsAuthenticated={setIsAuthenticated} />
-                )
-              }
-            />
-            <Route
-              path="/register"
-              element={isAuthenticated ? <Navigate to="/" /> : <Register />}
-            />
-            <Route
-              path="/"
-              element={
-                isAuthenticated ? (
-                  <>
-                    <section>
-                      <UploadMedia addNewMediaItem={addNewMediaItem} />
-                    </section>
-                    <section>
-                      <h2 className="text-xl font-semibold mb-4">
-                        Media Gallery
-                      </h2>
-                      <MediaList
-                        mediaItems={mediaItems}
-                        setMediaItems={setMediaItems}
-                        lastItemRef={lastItemRef}
-                        pagination={pagination}
-                        setPagination={setPagination}
-                        onPageChange={handlePageChange}
-                        isLoading={isLoading}
-                      />
-                    </section>
-                  </>
-                ) : (
-                  <Navigate to="/login" />
-                )
-              }
-            />
-          </Routes>
+        <main id="main-content" className="w-full max-w-7xl space-y-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Routes>
+              <Route
+                path="/login"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/" />
+                  ) : (
+                    <Login setIsAuthenticated={setIsAuthenticated} />
+                  )
+                }
+              />
+              <Route
+                path="/register"
+                element={isAuthenticated ? <Navigate to="/" /> : <Register />}
+              />
+              <Route
+                path="/"
+                element={
+                  isAuthenticated ? (
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <section id="upload-section" className="mb-8">
+                          <UploadMedia addNewMediaItem={addNewMediaItem} />
+                        </section>
+                        <section id="gallery-section">
+                          <MediaList
+                            mediaItems={mediaItems}
+                            setMediaItems={setMediaItems}
+                            lastItemRef={lastItemRef}
+                            pagination={pagination}
+                            setPagination={setPagination}
+                            onPageChange={handlePageChange}
+                            isLoading={isLoading}
+                          />
+                        </section>
+                      </motion.div>
+                    </AnimatePresence>
+                  ) : (
+                    <Navigate to="/login" />
+                  )
+                }
+              />
+            </Routes>
+          </motion.div>
         </main>
-        <ToastContainer />
+        <ToastContainer
+          position="bottom-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
       </div>
-    </Router>
+    </div>
   );
 };
 

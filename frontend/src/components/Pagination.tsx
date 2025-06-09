@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import { PaginationMetadata } from "../types";
 
 interface PaginationProps {
@@ -8,6 +10,7 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({ pagination, onPageChange, isLoading = false }) => {
+  const { t } = useTranslation();
   const { currentPage, totalPages, hasNextPage, hasPreviousPage, totalItems, itemsPerPage } = pagination;
 
   const generatePageNumbers = () => {
@@ -31,44 +34,54 @@ const Pagination: React.FC<PaginationProps> = ({ pagination, onPageChange, isLoa
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
   return (
-    <div className="flex flex-col items-center space-y-4 py-6">
-      <div className="text-sm text-gray-600">
-        Showing {startItem} to {endItem} of {totalItems} items
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col items-center space-y-4 py-6"
+    >
+      <div className="text-sm text-gray-600 dark:text-gray-400">
+        {t('pagination.showing', { start: startItem, end: endItem, total: totalItems })}
       </div>
 
-      <div className="flex items-center space-x-2">
-        <button
+      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => onPageChange(currentPage - 1)}
           disabled={!hasPreviousPage || isLoading}
-          className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
-          Previous
-        </button>
+          {t('pagination.previous')}
+        </motion.button>
 
         {generatePageNumbers().map((page) => (
-          <button
+          <motion.button
             key={page}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => onPageChange(page)}
             disabled={isLoading}
-            className={`px-3 py-2 text-sm font-medium rounded-md disabled:cursor-not-allowed ${
+            className={`px-4 py-2 text-sm font-medium rounded-lg disabled:cursor-not-allowed transition-all duration-200 ${
               page === currentPage
-                ? "text-white bg-blue-600 border border-blue-600"
-                : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
+                ? "text-white bg-primary-600 border border-primary-600 shadow-lg"
+                : "text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
             }`}
           >
             {page}
-          </button>
+          </motion.button>
         ))}
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => onPageChange(currentPage + 1)}
           disabled={!hasNextPage || isLoading}
-          className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
-          Next
-        </button>
+          {t('pagination.next')}
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,32 +1,29 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { PasswordStrength } from "../types";
 import { PasswordStrengthIndicatorProps } from "../types";
-
-interface Requirement {
-  key: keyof PasswordStrength;
-  label: string;
-  icon: string;
-}
-
-const requirements: Requirement[] = [
-  { key: "hasLength", label: "At least 8 characters", icon: "📏" },
-  { key: "hasUpper", label: "One uppercase letter (A-Z)", icon: "🔤" },
-  { key: "hasLower", label: "One lowercase letter (a-z)", icon: "🔡" },
-  { key: "hasNumber", label: "One number (0-9)", icon: "🔢" },
-  { key: "hasSpecial", label: "One special character (!@#$%^&*)", icon: "⚡" },
-];
 
 const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
   strength,
 }) => {
+  const { t } = useTranslation();
+
+  const requirements = [
+    { key: "hasLength" as keyof PasswordStrength, label: t('password.requirement.length'), icon: "📏" },
+    { key: "hasUpper" as keyof PasswordStrength, label: t('password.requirement.upper'), icon: "🔤" },
+    { key: "hasLower" as keyof PasswordStrength, label: t('password.requirement.lower'), icon: "🔡" },
+    { key: "hasNumber" as keyof PasswordStrength, label: t('password.requirement.number'), icon: "🔢" },
+    { key: "hasSpecial" as keyof PasswordStrength, label: t('password.requirement.special'), icon: "⚡" },
+  ];
+
   const metRequirements = Object.values(strength).filter(Boolean).length;
 
   const getStrengthLevel = () => {
-    if (metRequirements === 0) return { label: "Very Weak", color: "bg-red-500", textColor: "text-red-600", widthClass: "w-0" };
-    if (metRequirements <= 2) return { label: "Weak", color: "bg-red-400", textColor: "text-red-600", widthClass: "w-2/5" };
-    if (metRequirements <= 3) return { label: "Fair", color: "bg-yellow-400", textColor: "text-yellow-600", widthClass: "w-3/5" };
-    if (metRequirements <= 4) return { label: "Good", color: "bg-blue-500", textColor: "text-blue-600", widthClass: "w-4/5" };
-    return { label: "Strong", color: "bg-green-500", textColor: "text-green-600", widthClass: "w-full" };
+    if (metRequirements === 0) return { label: t('password.veryWeak'), color: "bg-red-500", textColor: "text-red-600 dark:text-red-400", widthClass: "w-0" };
+    if (metRequirements <= 2) return { label: t('password.weak'), color: "bg-red-400", textColor: "text-red-600 dark:text-red-400", widthClass: "w-2/5" };
+    if (metRequirements <= 3) return { label: t('password.fair'), color: "bg-yellow-400", textColor: "text-yellow-600 dark:text-yellow-400", widthClass: "w-3/5" };
+    if (metRequirements <= 4) return { label: t('password.good'), color: "bg-blue-500", textColor: "text-blue-600 dark:text-blue-400", widthClass: "w-4/5" };
+    return { label: t('password.strong'), color: "bg-green-500", textColor: "text-green-600 dark:text-green-400", widthClass: "w-full" };
   };
 
   const strengthLevel = getStrengthLevel();
@@ -36,24 +33,24 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
       {/* Strength meter */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-700">Password Strength</span>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('password.strength')}</span>
           <span className={`text-sm font-semibold ${strengthLevel.textColor}`}>
             {strengthLevel.label}
           </span>
         </div>
 
-        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
           <div
             className={`h-full transition-all duration-500 ease-out ${strengthLevel.color} ${strengthLevel.widthClass}`}
             role="progressbar"
-            aria-label={`Password strength: ${strengthLevel.label}`}
+            aria-label={`${t('password.strength')}: ${strengthLevel.label}`}
           />
         </div>
       </div>
 
       {/* Requirements checklist */}
       <div className="space-y-2">
-        <h4 className="text-sm font-medium text-gray-700">Requirements:</h4>
+        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('password.requirements')}</h4>
         <div className="grid gap-2">
           {requirements.map(({ key, label, icon }) => {
             const isMet = strength[key];
@@ -67,13 +64,13 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
                 <div
                   className={`flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 ${
                     isMet
-                      ? "bg-green-100 text-green-600"
-                      : "bg-gray-100 text-gray-400"
+                      ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                   }`}
                 >
                   {isMet ? "✓" : icon}
                 </div>
-                <span className={`${isMet ? "line-through" : ""}`}>{label}</span>
+                <span className={`${isMet ? "line-through" : ""} text-gray-700 dark:text-gray-300`}>{label}</span>
               </div>
             );
           })}
