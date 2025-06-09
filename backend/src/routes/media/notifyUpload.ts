@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
-import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { HeadObjectCommand } from '@aws-sdk/client-s3';
+import { generateCanonicalUrl } from '../../utils/urlGenerator';
 
 const notifyUploadSchema = {
   tags: ["media"],
@@ -38,17 +38,34 @@ const notifyUpload: FastifyPluginAsync = async (fastify): Promise<void> => {
     const mediaCreator = request.user.username;
 
     try {
-      const command = new GetObjectCommand({
+      // Verify the file exists in S3 before storing in database
+      await fastify.s3.send(new HeadObjectCommand({
         Bucket: BUCKET_NAME,
         Key: fileName
+      }));
+
+      // Store media metadata in database (without URL - we'll generate canonical URLs dynamically)
+      const stmt = fastify.sqlite.prepare('INSERT INTO media (file_name, likes, created_at, mimetype, created_by) VALUES (?, ?, ?, ?, ?)');
+      const info = stmt.run(fileName, 0, new Date().toISOString(), mimeType, mediaCreator);
+
+      // Generate canonical URL for response
+      const canonicalUrl = generateCanonicalUrl(fileName);
+
+      return reply.send({
+        id: info.lastInsertRowid,
+        file_name: fileName,
+        likes: 0,
+        url: canonicalUrl,
+        created_at: new Date().toISOString(),
+        mimetype: mimeType,
+        created_by: mediaCreator,
+        deletable: true
       });
-
-      const url = await getSignedUrl(fastify.s3, command, { expiresIn: 60 * 60 * 24 * 7 });
-      const stmt = fastify.sqlite.prepare('INSERT INTO media (file_name, likes, url, created_at, mimetype, created_by) VALUES (?, ?, ?, ?, ?, ?)');
-      const info = stmt.run(fileName, 0, url, new Date().toISOString(), mimeType, mediaCreator);
-
-      return reply.send({ id: info.lastInsertRowid, file_name: fileName, likes: 0, url, created_at: new Date(), mimetype: mimeType, created_by: mediaCreator, deletable: true });
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === 'NoSuchKey' || err.name === 'NotFound') {
+        return reply.notFound('File not found in S3');
+      }
+      console.error('Error notifying upload:', err);
       return reply.internalServerError('Error notifying upload');
     }
   })

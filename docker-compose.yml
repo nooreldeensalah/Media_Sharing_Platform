@@ -37,5 +37,21 @@ services:
     volumes:
       - minio-data:/data
 
+  minio-init:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+        sleep 3;
+        mc alias set local http://localhost:9000 minioadmin minioadmin;
+        mc mb -p local/media || true;
+        mc anonymous set download local/media;
+      "
+    network_mode: "host"
+    volumes:
+      - minio-config:/root/.mc # optional, to persist mc alias config
+
 volumes:
   minio-data:
+  minio-config:

@@ -1,4 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
+import { addCanonicalUrlsToMediaItems } from '../../utils/urlGenerator'
 
 const getAllMediaSchema = {
   "tags": ["media"],
@@ -129,8 +130,10 @@ const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
       if (rows.length === 0 && page === 1) {
         return reply.status(204).send();
       } else {
+        const mediaItemsWithUrls = addCanonicalUrlsToMediaItems(rows);
+
         return reply.send({
-          data: rows,
+          data: mediaItemsWithUrls,
           pagination: {
             currentPage: page,
             totalPages,

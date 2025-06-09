@@ -22,7 +22,6 @@ const sqlitePlugin: FastifyPluginAsync = async (fastify, options) => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     file_name TEXT NOT NULL,
     likes INTEGER NOT NULL DEFAULT 0,
-    url TEXT NOT NULL,
     created_at TEXT NOT NULL,
     mimetype TEXT NOT NULL,
     created_by TEXT NOT NULL

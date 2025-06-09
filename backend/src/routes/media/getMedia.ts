@@ -1,4 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
+import { generateCanonicalUrl } from '../../utils/urlGenerator';
 
 const getMediaSchema = {
   "tags": ["media"],
@@ -68,13 +69,18 @@ const getMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     const { id } = request.params as { id: number };
 
     try {
-      const row = fastify.sqlite.prepare('SELECT * FROM media WHERE id = ?').get(id);
+      const row = fastify.sqlite.prepare('SELECT * FROM media WHERE id = ?').get(id) as any;
 
       if (!row) {
         return reply.notFound('File not found in database');
       }
 
-      return reply.send(row);
+      const mediaWithUrl = {
+        ...row,
+        url: generateCanonicalUrl(row.file_name)
+      };
+
+      return reply.send(mediaWithUrl);
     } catch (err) {
       return reply.internalServerError('Error retrieving file');
     }
