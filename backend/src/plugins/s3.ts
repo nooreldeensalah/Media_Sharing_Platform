@@ -18,7 +18,11 @@ export default fp(async (fastify) => {
   });
 
   fastify.decorate("s3", s3);
-});
+},
+  {
+    name: "s3",
+  }
+);
 
 declare module "fastify" {
   interface FastifyInstance {

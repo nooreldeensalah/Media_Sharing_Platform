@@ -14,6 +14,9 @@ export default fp<FastifyJWTOptions>(async (fastify, opts) => {
       reply.send(err);
     }
   });
+},
+{
+  name: 'jwt',
 });
 
 declare module 'fastify' {

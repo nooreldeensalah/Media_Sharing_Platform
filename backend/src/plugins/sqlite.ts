@@ -67,5 +67,5 @@ const createLikesTableQuery = `
 };
 
 export default fp(sqlitePlugin, {
-  name: 'sqlite-plugin',
+  name: 'sqlite',
 });

@@ -1,106 +1,32 @@
 import { FastifyPluginAsync } from 'fastify';
-import * as bcrypt from 'bcrypt';
+import { registerSchema, loginSchema } from '../../schemas/users';
+import { ServiceError } from '../../types';
+import { handleServiceError } from '../../utils/errorHandler';
 
 
-const registerSchema = {
-  tags: ["users"],
-  summary: "User registration endpoint",
-  errorMessage: {
-    body: {
-      properties: {
-        password: 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character'
-      }
-    }
-  },
-  body: {
-    type: 'object',
-    required: ['username', 'password'],
-    properties: {
-      username: { type: 'string' },
-      password: {
-        type: 'string',
-        pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$' // Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
-      }
-    }
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' }
-      }
-    },
-    400: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' }
-      }
-    }
-  }
-};
 
-const loginSchema = {
-  tags: ["users"],
-  summary: 'User login endpoint',
-  body: {
-    type: 'object',
-    required: ['username', 'password'],
-    properties: {
-      username: { type: 'string' },
-      password: { type: 'string' }
-    }
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        token: { type: 'string' }
-      }
-    },
-    401: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' }
-      }
-    }
-  }
-};
-
-interface User {
-  id: number;
-  username: string;
-  password: string;
-}
 
 const users: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.post('/register', { schema: registerSchema }, async (request, reply) => {
     const { username, password } = request.body as { username: string, password: string };
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
-      const stmt = fastify.sqlite.prepare('INSERT INTO users (username, password) VALUES (?, ?)');
-      stmt.run(username, hashedPassword);
-      reply.send({ message: 'User registered successfully' });
-    } catch (err) {
-      if (err instanceof Error && 'code' in err && err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-        return reply.badRequest('Username already exists');
-      }
-      fastify.log.error('Registration error:', err);
-      return reply.internalServerError('Error registering user');
+      const result = await fastify.userService.registerUser(username, password);
+      return reply.send(result);
+    } catch (error) {
+      return handleServiceError(error as ServiceError, reply);
     }
   });
 
   fastify.post('/login', { schema: loginSchema }, async (request, reply) => {
     const { username, password } = request.body as { username: string, password: string };
-    const stmt = fastify.sqlite.prepare('SELECT * FROM users WHERE username = ?');
-    const user = stmt.get(username) as User
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return reply.unauthorized('Invalid username or password');
+    try {
+      const result = await fastify.userService.loginUser(username, password);
+      return reply.send(result);
+    } catch (error) {
+      return handleServiceError(error as ServiceError, reply);
     }
-
-    const token = fastify.jwt.sign({ id: user.id, username });
-    reply.send({ token });
   });
 };
 
