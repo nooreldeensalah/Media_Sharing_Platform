@@ -8,7 +8,7 @@ export const getAllMediaSchema = {
       page: { type: "integer", minimum: 1, default: 1 },
       limit: { type: "integer", minimum: 1, maximum: 100, default: 10 },
       user: { type: "string", description: "Filter by username" },
-      search: { type: "string", description: "Search in file names" }
+      search: { type: "string", description: "Search in original file names" }
     }
   },
   response: {
@@ -223,7 +223,8 @@ export const getPreSignedPutURLSchema = {
     required: ['fileName', 'mimeType'],
     properties: {
       fileName: { type: 'string' },
-      mimeType: { type: 'string' }
+      mimeType: { type: 'string' },
+      originalFilename: { type: 'string' }
     }
   },
   summary: 'Get a pre-signed URL for uploading a file to S3',
@@ -259,6 +260,7 @@ export const notifyUploadSchema = {
     properties: {
       fileName: { type: "string" },
       mimeType: { type: "string" },
+      originalFilename: { type: "string" },
     },
   },
   summary: "Notify backend server of media uploads to S3",

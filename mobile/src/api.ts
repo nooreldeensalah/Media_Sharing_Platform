@@ -59,6 +59,7 @@ export const uploadMedia = async (
   file: Blob,
   mimeType: string,
   fileName: string,
+  originalFilename?: string,
 ) => {
   // Step 1: Request a pre-signed PUT URL from the backend
   const preSignedResponse = await fetch(`${BASE_URL}/media/upload-url`, {
@@ -67,7 +68,7 @@ export const uploadMedia = async (
       "Content-Type": "application/json",
       ...(await getAuthHeaders()),
     },
-    body: JSON.stringify({ fileName, mimeType }),
+    body: JSON.stringify({ fileName, mimeType, originalFilename }),
   });
 
   if (!preSignedResponse.ok) {
@@ -96,7 +97,7 @@ export const uploadMedia = async (
       "Content-Type": "application/json",
       ...(await getAuthHeaders()),
     },
-    body: JSON.stringify({ fileName, mimeType }),
+    body: JSON.stringify({ fileName, mimeType, originalFilename }),
   });
 
   if (!notifyResponse.ok) {

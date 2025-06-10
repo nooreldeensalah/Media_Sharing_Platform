@@ -68,8 +68,8 @@ export class MediaService {
     }
 
     if (search) {
-      conditions.push('media.file_name LIKE ?');
-      params.push(`%${search}%`);
+      conditions.push('(media.original_filename LIKE ? OR media.file_name LIKE ?)');
+      params.push(`%${search}%`, `%${search}%`);
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
@@ -174,10 +174,10 @@ export class MediaService {
     };
   }
 
-  async notifyUpload(fileName: string, mimeType: string, username: string): Promise<MediaItem> {
+  async notifyUpload(fileName: string, mimeType: string, username: string, originalFilename?: string): Promise<MediaItem> {
     try {
-      const stmt = this.fastify.sqlite.prepare('INSERT INTO media (file_name, likes, created_at, mimetype, created_by) VALUES (?, ?, ?, ?, ?)');
-      const info = stmt.run(fileName, 0, new Date().toISOString(), mimeType, username);
+      const stmt = this.fastify.sqlite.prepare('INSERT INTO media (file_name, original_filename, likes, created_at, mimetype, created_by) VALUES (?, ?, ?, ?, ?, ?)');
+      const info = stmt.run(fileName, originalFilename || null, 0, new Date().toISOString(), mimeType, username);
 
       const canonicalUrl = generateCanonicalUrl(fileName);
 

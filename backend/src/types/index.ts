@@ -57,6 +57,7 @@ export interface User {
 export interface DatabaseMediaItem {
   id: number;
   file_name: string;
+  original_filename?: string;
   likes: number;
   created_at: string;
   mimetype: string;
@@ -81,6 +82,7 @@ export interface LikeAction {
 export interface UploadNotification {
   fileName: string;
   mimeType: string;
+  originalFilename?: string;
 }
 
 export interface AuthenticatedUser {

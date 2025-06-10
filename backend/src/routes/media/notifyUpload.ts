@@ -7,7 +7,7 @@ import { handleServiceError } from '../../utils/errorHandler';
 
 const notifyUpload: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.post('/notify-upload', { schema: notifyUploadSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
-    const { fileName, mimeType } = request.body as UploadNotification;
+    const { fileName, mimeType, originalFilename } = request.body as UploadNotification;
     const user = request.user as AuthenticatedUser;
 
     try {
@@ -15,7 +15,7 @@ const notifyUpload: FastifyPluginAsync = async (fastify): Promise<void> => {
       await fastify.s3Service.verifyFileExists(fileName);
 
       // Store media metadata in database
-      const result = await fastify.mediaService.notifyUpload(fileName, mimeType, user.username);
+      const result = await fastify.mediaService.notifyUpload(fileName, mimeType, user.username, originalFilename);
       return reply.send(result);
     } catch (error) {
       return handleServiceError(error as ServiceError, reply);

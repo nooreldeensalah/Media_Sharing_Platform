@@ -51,7 +51,7 @@ const resources = {
       'media.deleteConfirm.confirm': 'Delete',
 
       // Search and Filters
-      'media.search.placeholder': 'Search media files...',
+      'media.search.placeholder': 'Search by filename...',
       'media.search.submit': 'Search',
       'media.filters.active': 'Active filters',
       'media.filters.removeSearch': 'Remove search filter',
@@ -177,7 +177,7 @@ const resources = {
       'media.deleteConfirm.confirm': 'حذف',
 
       // Search and Filters
-      'media.search.placeholder': 'البحث في ملفات الوسائط...',
+      'media.search.placeholder': 'البحث بواسطة اسم الملف...',
       'media.search.submit': 'بحث',
       'media.filters.active': 'المرشحات النشطة',
       'media.filters.removeSearch': 'إزالة مرشح البحث',

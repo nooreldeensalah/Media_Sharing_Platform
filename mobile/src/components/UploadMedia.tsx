@@ -27,12 +27,13 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
       try {
         const fileUri = result.assets[0].uri;
         const fileMimeType = result.assets[0].mimeType || "image/jpeg";
-        const fileName = result.assets[0].fileName || "random-file-name.jpeg";
+        const originalFileName = result.assets[0].fileName || "unknown-file.jpeg";
+        const uuidFileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
         const response = await fetch(fileUri);
         const blob = await response.blob();
 
-        const uploadedMedia = await uploadMedia(blob, fileMimeType, fileName);
+        const uploadedMedia = await uploadMedia(blob, fileMimeType, uuidFileName, originalFileName);
         addNewMediaItem(uploadedMedia);
       } catch (error) {
         console.error("Error uploading media:", error);

@@ -78,7 +78,7 @@ export const uploadMedia = async (file: File) => {
       "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify({ fileName, mimeType: file.type }),
+    body: JSON.stringify({ fileName, mimeType: file.type, originalFilename: file.name }),
   });
 
   if (!preSignedResponse.ok) {
@@ -106,7 +106,7 @@ export const uploadMedia = async (file: File) => {
       "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify({ fileName, mimeType: file.type }),
+    body: JSON.stringify({ fileName, mimeType: file.type, originalFilename: file.name }),
   });
 
   if (!notifyResponse.ok) {
