@@ -177,6 +177,63 @@ input[type="file"] {
   right: unset;
 }
 
+/* Enhanced toast styling for dark theme */
+.Toastify__toast {
+  @apply rounded-xl shadow-lg;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.Toastify__toast--success {
+  @apply bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-200;
+  border-color: rgb(16 185 129 / 0.2);
+}
+
+.Toastify__toast--error {
+  @apply bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200;
+  border-color: rgb(239 68 68 / 0.2);
+}
+
+.Toastify__toast--warning {
+  @apply bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200;
+  border-color: rgb(245 158 11 / 0.2);
+}
+
+.Toastify__toast--info {
+  @apply bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200;
+  border-color: rgb(59 130 246 / 0.2);
+}
+
+.Toastify__progress-bar {
+  @apply h-1;
+}
+
+.Toastify__progress-bar--success {
+  @apply bg-emerald-500;
+}
+
+.Toastify__progress-bar--error {
+  @apply bg-red-500;
+}
+
+.Toastify__progress-bar--warning {
+  @apply bg-amber-500;
+}
+
+.Toastify__progress-bar--info {
+  @apply bg-blue-500;
+}
+
+.Toastify__close-button {
+  @apply text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200;
+  opacity: 0.7;
+}
+
+.dark .Toastify__toast {
+  @apply bg-gray-800/95;
+  backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 /* Smooth transitions for theme and language changes */
 html {
   transition: direction 0.3s ease;

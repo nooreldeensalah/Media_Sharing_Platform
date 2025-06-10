@@ -14,7 +14,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import NavBar from "./components/NavBar";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
+import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { getAllMedia } from "./api";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,6 +35,7 @@ const App: React.FC = () => {
 };
 
 const AppContent: React.FC = () => {
+  const { theme } = useTheme();
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [pagination, setPagination] = useState<PaginationMetadata | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -238,7 +239,9 @@ const AppContent: React.FC = () => {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="colored"
+          theme={theme === "dark" ? "dark" : "light"}
+          toastClassName="backdrop-blur-sm"
+          bodyClassName="text-sm font-medium"
         />
       </div>
     </div>
