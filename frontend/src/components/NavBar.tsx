@@ -45,7 +45,7 @@ const NavBar: React.FC<NavBarProps> = ({ isAuthenticated, handleLogout }) => {
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 hover:text-red-700 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
+                className="border-red-400 text-red-700 hover:bg-red-100 hover:border-red-500 hover:text-red-800 focus:ring-red-500 dark:border-red-500 dark:text-red-400 dark:hover:bg-red-900/30 dark:hover:border-red-400 dark:hover:text-red-300 transition-all duration-200"
               >
                 {t('nav.logout')}
               </Button>
