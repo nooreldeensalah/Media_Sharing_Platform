@@ -39,6 +39,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     concurrency: deploy-frontend
+    environment:
+      name: production-frontend
+      url: https://media-platform-frontend.fly.dev/
     steps:
       - uses: actions/checkout@v4
 

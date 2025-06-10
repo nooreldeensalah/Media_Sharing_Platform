@@ -35,6 +35,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     concurrency: deploy-backend
+    environment:
+      name: production-backend
+      url: https://media-platform-backend.fly.dev/
     steps:
       - uses: actions/checkout@v4
 

@@ -135,7 +135,7 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
               <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full flex-shrink-0">
                 <DocumentIcon className="h-4 w-4" />
               </div>
-              <span className="text-gray-900 dark:text-white font-mono text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded min-w-0 flex-1 truncate">
+              <span className="text-gray-900 dark:text-white font-mono text-sm min-w-0 flex-1 truncate">
                 {item.original_filename}
               </span>
             </div>
