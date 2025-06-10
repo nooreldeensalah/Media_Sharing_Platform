@@ -151,9 +151,9 @@ const AppContent: React.FC = () => {
         Skip to main content
       </a>
 
-      <div className="min-h-screen flex flex-col items-center p-4">
+      <div className="min-h-screen flex flex-col items-center px-4 py-2">
         <NavBar isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
-        <main id="main-content" className="w-full max-w-7xl space-y-8">
+        <main id="main-content" className="w-full max-w-[1600px] space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -184,10 +184,14 @@ const AppContent: React.FC = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
+                        className="space-y-4"
                       >
-                        <section id="upload-section" className="mb-8">
+                        {/* Compact upload section */}
+                        <section id="upload-section">
                           <UploadMedia addNewMediaItem={addNewMediaItem} />
                         </section>
+
+                        {/* Search and filter section */}
                         <SearchAndFilter
                           onSearch={handleSearch}
                           onUserFilter={handleUserFilter}
@@ -195,7 +199,9 @@ const AppContent: React.FC = () => {
                           currentUserFilter={userFilter}
                           onClearFilters={handleClearFilters}
                         />
-                        <section id="gallery-section">
+
+                        {/* Gallery section with more space */}
+                        <section id="gallery-section" className="flex-1">
                           <MediaList
                             mediaItems={mediaItems}
                             setMediaItems={setMediaItems}

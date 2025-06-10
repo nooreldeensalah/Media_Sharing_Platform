@@ -95,7 +95,7 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
       />
 
       <motion.div
-        className={`relative border-2 border-dashed rounded-xl p-8 transition-all duration-300 ${
+        className={`relative border-2 border-dashed rounded-lg p-4 transition-all duration-300 ${
           dragOver
             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
             : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50'
@@ -105,7 +105,7 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
         onDrop={handleDrop}
         whileHover={{ scale: 1.01 }}
       >
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-3">
           <motion.div
             animate={{
               y: dragOver ? -5 : 0,
@@ -114,26 +114,26 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
             transition={{ duration: 0.2 }}
             className="flex justify-center"
           >
-            <div className="bg-gradient-to-br from-primary-500 to-primary-700 p-4 rounded-full">
-              <CloudArrowUpIcon className="h-12 w-12 text-white" />
+            <div className="bg-gradient-to-br from-primary-500 to-primary-700 p-3 rounded-full">
+              <CloudArrowUpIcon className="h-8 w-8 text-white" />
             </div>
           </motion.div>
 
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
               {dragOver ? t('upload.dropHere') : t('media.upload')}
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
               {t('upload.dragDrop')}
             </p>
 
-            <div className="flex justify-center space-x-4 rtl:space-x-reverse mb-4">
-              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                <PhotoIcon className="h-5 w-5 mr-1 rtl:mr-0 rtl:ml-1" />
+            <div className="flex justify-center space-x-3 rtl:space-x-reverse mb-3">
+              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                <PhotoIcon className="h-4 w-4 mr-1 rtl:mr-0 rtl:ml-1" />
                 {t('upload.images')}
               </div>
-              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                <FilmIcon className="h-5 w-5 mr-1 rtl:mr-0 rtl:ml-1" />
+              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                <FilmIcon className="h-4 w-4 mr-1 rtl:mr-0 rtl:ml-1" />
                 {t('upload.videos')}
               </div>
             </div>

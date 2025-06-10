@@ -23,6 +23,7 @@ export const getAllMediaSchema = {
             properties: {
               id: { type: "integer" },
               file_name: { type: "string" },
+              original_filename: { type: "string" },
               likes: { type: "integer" },
               url: { type: "string" },
               created_at: { type: "string", format: "date-time" },
@@ -87,6 +88,7 @@ export const getMediaSchema = {
       properties: {
         id: { type: "integer" },
         file_name: { type: "string" },
+        original_filename: { type: "string" },
         likes: { type: "integer" },
         url: { type: "string" },
         created_at: { type: "string", format: "date-time" },

@@ -137,22 +137,6 @@ const MediaList: React.FC<MediaListProps> = ({
       className="space-y-6"
     >
       {/* Header */}
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="text-center"
-      >
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-400 dark:to-primary-600 bg-clip-text text-transparent mb-2">
-          {t('media.gallery')}
-        </h2>
-        {pagination && (
-          <p className="text-gray-600 dark:text-gray-400">
-            {t('pagination.page', { current: pagination.currentPage, total: pagination.totalPages })}
-          </p>
-        )}
-      </motion.div>
-
       {/* Loading indicator */}
       {isLoading && (
         <div className="flex justify-center items-center py-8">
@@ -182,7 +166,7 @@ const MediaList: React.FC<MediaListProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
             {mediaItems.map((item, index) => (
               <motion.div

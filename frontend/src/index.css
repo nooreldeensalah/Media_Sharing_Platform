@@ -47,6 +47,43 @@
   .media-image {
     object-fit: cover;
     object-position: center;
+    width: 100%;
+    height: 100%;
+    background-color: #f3f4f6;
+    /* Improve image loading performance */
+    image-rendering: optimizeQuality;
+    /* Add subtle transition for loading states */
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+
+  /* Image optimization for different screen sizes */
+  .media-image.loading {
+    filter: blur(5px);
+    opacity: 0.7;
+  }
+
+  .media-image.loaded {
+    filter: none;
+    opacity: 1;
+  }
+
+  /* Responsive image scaling for larger cards */
+  @media (max-width: 640px) {
+    .media-image {
+      max-height: 300px;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .media-image {
+      max-height: 400px;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .media-image {
+      max-height: 500px;
+    }
   }
 
   /* Smooth animations */

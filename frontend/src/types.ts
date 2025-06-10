@@ -1,6 +1,7 @@
 export interface MediaItem {
   id: number;
   file_name: string;
+  original_filename?: string;
   likes: number;
   url: string;
   created_at: string;

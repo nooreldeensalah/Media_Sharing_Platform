@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { HeartIcon, TrashIcon, UserIcon, CalendarIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import { Button } from "./ui/Button";
-import ImageViewerModal from "./ImageViewerModal";
 import { MediaItemCardProps } from "../types";
 import { generateMediaAlt, getMediaType } from "../utils";
 import { useRelativeTime } from "../hooks/useRelativeTime";
@@ -18,7 +17,6 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [showImageViewer, setShowImageViewer] = useState(false);
   const { t } = useTranslation();
   const formatRelativeTime = useRelativeTime();
 
@@ -26,23 +24,19 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
   const altText = generateMediaAlt(item.file_name, item.mimetype);
 
   const handleMediaClick = () => {
-    if (mediaType === "video") {
-      window.open(item.url, '_blank', 'noopener,noreferrer');
-    } else {
-      setShowImageViewer(true);
-    }
+    window.open(item.url, '_blank', 'noopener,noreferrer');
   };
 
   return (
     <motion.div
       layout
-      className="group bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden border border-gray-200 dark:border-gray-700 card-hover"
+      className="group bg-white dark:bg-gray-800 rounded-xl shadow-xl dark:shadow-gray-900/50 overflow-hidden border border-gray-200 dark:border-gray-700 card-hover"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Media Content */}
-      <div className="relative aspect-square bg-gray-100 dark:bg-gray-700 overflow-hidden cursor-pointer group" onClick={handleMediaClick}>
+      {/* Media Content - Make it taller for larger cards */}
+      <div className="relative aspect-[4/3] bg-gray-100 dark:bg-gray-700 overflow-hidden cursor-pointer group" onClick={handleMediaClick}>
         {mediaType === "video" ? (
           <video
             controls
@@ -73,13 +67,14 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
             ) : (
               <img
                 alt={altText}
-                className={`w-full h-full media-image transition-all duration-300 ${
-                  imageLoaded ? 'opacity-100' : 'opacity-0'
+                className={`media-image transition-all duration-300 ${
+                  imageLoaded ? 'loaded opacity-100' : 'loading opacity-0'
                 } group-hover:scale-105`}
                 src={item.url}
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
                 loading="lazy"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               />
             )}
           </>
@@ -94,12 +89,12 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
       </div>
 
       {/* Card Content */}
-      <div className="p-4 space-y-4">
+      <div className="p-6 space-y-5">
         {/* User info */}
-        <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm">
-          <div className="flex items-center space-x-2 rtl:space-x-reverse text-gray-600 dark:text-gray-400">
-            <div className="p-1.5 bg-gray-100 dark:bg-gray-700 rounded-full">
-              <UserIcon className="h-3.5 w-3.5" />
+        <div className="flex items-center space-x-3 rtl:space-x-reverse text-base">
+          <div className="flex items-center space-x-3 rtl:space-x-reverse text-gray-600 dark:text-gray-400">
+            <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full">
+              <UserIcon className="h-4 w-4" />
             </div>
             <span className="font-medium">{t('media.uploadedBy')}</span>
             <button
@@ -112,56 +107,65 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
           </div>
         </div>
 
+
+        {/* Filename display */}
+        <div className="bg-gray-50 dark:bg-gray-750 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+          <div className="flex items-start space-x-3 rtl:space-x-reverse">
+            <div className="flex-shrink-0 p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{t('media.filename')}</p>
+              <p className="text-base font-semibold text-gray-900 dark:text-white font-mono bg-white dark:bg-gray-800 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600 break-all">
+                {item.original_filename}
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Date info */}
-        <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm">
-          <div className="flex items-center space-x-2 rtl:space-x-reverse text-gray-600 dark:text-gray-400">
-            <div className="p-1.5 bg-gray-100 dark:bg-gray-700 rounded-full">
-              <CalendarIcon className="h-3.5 w-3.5" />
+        <div className="flex items-center space-x-3 rtl:space-x-reverse text-base">
+          <div className="flex items-center space-x-3 rtl:space-x-reverse text-gray-600 dark:text-gray-400">
+            <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full">
+              <CalendarIcon className="h-4 w-4" />
             </div>
             <span className="text-gray-900 dark:text-white">{formatRelativeTime(item.created_at)}</span>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => item.likedByUser ? handleUnlike(item.id) : handleLike(item.id)}
-            className="flex items-center space-x-2 rtl:space-x-reverse text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+            className="flex items-center space-x-3 rtl:space-x-reverse text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200 p-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
             aria-label={item.likedByUser ? t('a11y.unlikeButton') : t('a11y.likeButton')}
           >
             {item.likedByUser ? (
-              <HeartSolidIcon className="h-5 w-5 text-red-500" />
+              <HeartSolidIcon className="h-6 w-6 text-red-500" />
             ) : (
-              <HeartIcon className="h-5 w-5" />
+              <HeartIcon className="h-6 w-6" />
             )}
-            <span className="font-medium text-sm">{item.likes} {t('media.likes')}</span>
+            <span className="font-medium text-base">{item.likes} {t('media.likes')}</span>
           </motion.button>
 
           {item.deletable && (
             <Button
               onClick={() => confirmDelete(item.id)}
               variant="ghost"
-              size="sm"
+              size="md"
               className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
               aria-label={t('a11y.deleteButton')}
             >
-              <TrashIcon className="h-4 w-4 mr-1 rtl:mr-0 rtl:ml-1" />
+              <TrashIcon className="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" />
               {t('media.delete')}
             </Button>
           )}
         </div>
       </div>
-
-      {/* Image Viewer Modal */}
-      <ImageViewerModal
-        isOpen={showImageViewer}
-        onClose={() => setShowImageViewer(false)}
-        imageUrl={item.url}
-        imageName={item.file_name}
-        imageAlt={altText}
-      />
     </motion.div>
   );
 };
