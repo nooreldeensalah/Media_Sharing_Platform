@@ -23,6 +23,9 @@ RUN npm run build
 # Use an Nginx base image to serve the built files
 FROM nginx:alpine
 
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Copy the built files from the builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
