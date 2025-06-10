@@ -9,9 +9,20 @@ interface PaginationProps {
   isLoading?: boolean;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ pagination, onPageChange, isLoading = false }) => {
+const Pagination: React.FC<PaginationProps> = ({
+  pagination,
+  onPageChange,
+  isLoading = false,
+}) => {
   const { t } = useTranslation();
-  const { currentPage, totalPages, hasNextPage, hasPreviousPage, totalItems, itemsPerPage } = pagination;
+  const {
+    currentPage,
+    totalPages,
+    hasNextPage,
+    hasPreviousPage,
+    totalItems,
+    itemsPerPage,
+  } = pagination;
 
   const generatePageNumbers = () => {
     const pages = [];
@@ -48,7 +59,7 @@ const Pagination: React.FC<PaginationProps> = ({ pagination, onPageChange, isLoa
           disabled={!hasPreviousPage || isLoading}
           className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
-          {t('pagination.previous')}
+          {t("pagination.previous")}
         </motion.button>
 
         {generatePageNumbers().map((page) => (
@@ -75,14 +86,22 @@ const Pagination: React.FC<PaginationProps> = ({ pagination, onPageChange, isLoa
           disabled={!hasNextPage || isLoading}
           className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
-          {t('pagination.next')}
+          {t("pagination.next")}
         </motion.button>
       </div>
 
       {/* Page info and item count - moved below pagination */}
       <div className="flex flex-col items-center space-y-1 text-sm text-gray-600 dark:text-gray-400">
-        <div>{t('pagination.page', { current: currentPage, total: totalPages })}</div>
-        <div>{t('pagination.showing', { start: startItem, end: endItem, total: totalItems })}</div>
+        <div>
+          {t("pagination.page", { current: currentPage, total: totalPages })}
+        </div>
+        <div>
+          {t("pagination.showing", {
+            start: startItem,
+            end: endItem,
+            total: totalItems,
+          })}
+        </div>
       </div>
     </motion.div>
   );

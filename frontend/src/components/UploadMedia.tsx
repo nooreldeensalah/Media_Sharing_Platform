@@ -1,7 +1,11 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { CloudArrowUpIcon, PhotoIcon, FilmIcon } from "@heroicons/react/24/outline";
+import {
+  CloudArrowUpIcon,
+  PhotoIcon,
+  FilmIcon,
+} from "@heroicons/react/24/outline";
 import { uploadMedia } from "../api";
 import { toast } from "react-toastify";
 import { Button } from "./ui/Button";
@@ -23,16 +27,16 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ['image/', 'video/'];
-    if (!allowedTypes.some(type => file.type.startsWith(type))) {
-      toast.error(t('validation.invalidFileType'));
+    const allowedTypes = ["image/", "video/"];
+    if (!allowedTypes.some((type) => file.type.startsWith(type))) {
+      toast.error(t("validation.invalidFileType"));
       return;
     }
 
     // Validate file size (50MB limit)
     const maxSize = 50 * 1024 * 1024;
     if (file.size > maxSize) {
-      toast.error(t('validation.fileSizeLimit'));
+      toast.error(t("validation.fileSizeLimit"));
       return;
     }
 
@@ -40,13 +44,13 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
       setUploading(true);
       const uploadedMedia = await uploadMedia(file);
       addNewMediaItem(uploadedMedia);
-      toast.success(t('media.uploadSuccess'));
+      toast.success(t("media.uploadSuccess"));
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      toast.error(t('media.uploadFailed'));
+      toast.error(t("media.uploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -91,14 +95,14 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
         ref={fileInputRef}
         className="hidden"
         accept="image/*,video/*"
-        title={t('media.upload')}
+        title={t("media.upload")}
       />
 
       <motion.div
         className={`relative border-2 border-dashed rounded-lg p-4 transition-all duration-300 ${
           dragOver
-            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-            : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50'
+            ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+            : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50"
         } hover:border-primary-400 hover:bg-primary-25 dark:hover:bg-primary-900/10`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -109,7 +113,7 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
           <motion.div
             animate={{
               y: dragOver ? -5 : 0,
-              scale: dragOver ? 1.1 : 1
+              scale: dragOver ? 1.1 : 1,
             }}
             transition={{ duration: 0.2 }}
             className="flex justify-center"
@@ -121,20 +125,20 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
 
           <div>
             <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
-              {dragOver ? t('upload.dropHere') : t('media.upload')}
+              {dragOver ? t("upload.dropHere") : t("media.upload")}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              {t('upload.dragDrop')}
+              {t("upload.dragDrop")}
             </p>
 
             <div className="flex justify-center space-x-3 rtl:space-x-reverse mb-3">
               <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                 <PhotoIcon className="h-4 w-4 mr-1 rtl:mr-0 rtl:ml-1" />
-                {t('upload.images')}
+                {t("upload.images")}
               </div>
               <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                 <FilmIcon className="h-4 w-4 mr-1 rtl:mr-0 rtl:ml-1" />
-                {t('upload.videos')}
+                {t("upload.videos")}
               </div>
             </div>
 
@@ -143,14 +147,14 @@ const UploadMedia: React.FC<UploadMediaProps> = ({ addNewMediaItem }) => {
               loading={uploading}
               disabled={uploading}
               className="mx-auto"
-              aria-label={t('a11y.uploadButton')}
+              aria-label={t("a11y.uploadButton")}
             >
-              {uploading ? t('media.uploading') : t('upload.chooseFiles')}
+              {uploading ? t("media.uploading") : t("upload.chooseFiles")}
             </Button>
           </div>
 
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {t('upload.maxSize')}
+            {t("upload.maxSize")}
           </p>
         </div>
       </motion.div>

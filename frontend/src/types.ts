@@ -39,7 +39,9 @@ export interface MediaListProps {
   setMediaItems: React.Dispatch<React.SetStateAction<MediaItem[]>>;
   lastItemRef: React.RefObject<HTMLDivElement>;
   pagination?: PaginationMetadata | null;
-  setPagination?: React.Dispatch<React.SetStateAction<PaginationMetadata | null>>;
+  setPagination?: React.Dispatch<
+    React.SetStateAction<PaginationMetadata | null>
+  >;
   onPageChange?: (page: number) => void;
   isLoading?: boolean;
   onUserFilter?: (username: string) => void;

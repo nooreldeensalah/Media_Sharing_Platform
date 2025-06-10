@@ -1,18 +1,19 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { LanguageIcon } from '@heroicons/react/24/outline';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { motion } from "framer-motion";
+import { LanguageIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'ar', name: 'العربية', flag: '🇪🇬' },
+  { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "ar", name: "العربية", flag: "🇪🇬" },
 ];
 
 export const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage =
+    languages.find((lang) => lang.code === i18n.language) || languages[0];
 
   const changeLanguage = (langCode: string) => {
     i18n.changeLanguage(langCode);
@@ -47,8 +48,8 @@ export const LanguageSelector: React.FC = () => {
               onClick={() => changeLanguage(language.code)}
               className={`w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-3 first:rounded-t-lg last:rounded-b-lg transition-colors ${
                 currentLanguage.code === language.code
-                  ? 'bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400'
-                  : 'text-gray-700 dark:text-gray-300'
+                  ? "bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400"
+                  : "text-gray-700 dark:text-gray-300"
               }`}
             >
               <span className="text-lg">{language.flag}</span>

@@ -37,12 +37,12 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
 
             {/* Title */}
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 text-center">
-              {t('media.deleteConfirm.title')}
+              {t("media.deleteConfirm.title")}
             </h3>
 
             {/* Message */}
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-6 text-center leading-relaxed">
-              {t('media.deleteConfirm.message')}
+              {t("media.deleteConfirm.message")}
             </p>
 
             {/* Actions */}
@@ -52,14 +52,14 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                 variant="outline"
                 className="w-full sm:w-auto order-2 sm:order-1 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
               >
-                {t('general.cancel')}
+                {t("general.cancel")}
               </Button>
               <Button
                 onClick={handleDelete}
                 variant="danger"
                 className="w-full sm:w-auto order-1 sm:order-2 bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-colors duration-200"
               >
-                {t('media.deleteConfirm.confirm')}
+                {t("media.deleteConfirm.confirm")}
               </Button>
             </div>
           </motion.div>

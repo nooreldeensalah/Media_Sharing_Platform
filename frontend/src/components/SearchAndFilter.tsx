@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { MagnifyingGlassIcon, XMarkIcon, UserIcon } from "@heroicons/react/24/outline";
+import {
+  MagnifyingGlassIcon,
+  XMarkIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 import { Button } from "./ui/Button";
 
 interface SearchAndFilterProps {
@@ -45,7 +49,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
               type="text"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              placeholder={t('media.search.placeholder')}
+              placeholder={t("media.search.placeholder")}
               className="w-full pl-10 pr-20 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
             />
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
@@ -58,7 +62,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                   type="button"
                   onClick={handleSearchClear}
                   className="p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
-                  aria-label={t('general.clear')}
+                  aria-label={t("general.clear")}
                 >
                   <XMarkIcon className="h-4 w-4" />
                 </button>
@@ -68,9 +72,9 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           <Button
             type="submit"
             className="sr-only"
-            aria-label={t('media.search.submit')}
+            aria-label={t("media.search.submit")}
           >
-            {t('media.search.submit')}
+            {t("media.search.submit")}
           </Button>
         </form>
 
@@ -83,7 +87,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             className="flex flex-wrap items-center gap-2"
           >
             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              {t('media.filters.active')}:
+              {t("media.filters.active")}:
             </span>
 
             {/* Search Filter Tag */}
@@ -99,7 +103,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                 <button
                   onClick={() => onSearch("")}
                   className="ml-1 p-0.5 hover:bg-primary-200 dark:hover:bg-primary-800/50 rounded-full transition-colors"
-                  aria-label={t('media.filters.removeSearch')}
+                  aria-label={t("media.filters.removeSearch")}
                 >
                   <XMarkIcon className="h-3 w-3" />
                 </button>
@@ -119,7 +123,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                 <button
                   onClick={() => onUserFilter(null)}
                   className="ml-1 p-0.5 hover:bg-blue-200 dark:hover:bg-blue-800/50 rounded-full transition-colors"
-                  aria-label={t('media.filters.removeUser')}
+                  aria-label={t("media.filters.removeUser")}
                 >
                   <XMarkIcon className="h-3 w-3" />
                 </button>
@@ -133,7 +137,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
               size="sm"
               className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
             >
-              {t('media.filters.clearAll')}
+              {t("media.filters.clearAll")}
             </Button>
           </motion.div>
         )}

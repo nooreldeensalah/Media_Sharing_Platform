@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { HeartIcon, TrashIcon, UserIcon, CalendarIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import {
+  HeartIcon,
+  TrashIcon,
+  UserIcon,
+  CalendarIcon,
+  ArrowTopRightOnSquareIcon,
+} from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import { Button } from "./ui/Button";
 import { MediaItemCardProps } from "../types";
@@ -24,7 +30,7 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
   const altText = generateMediaAlt(item.file_name, item.mimetype);
 
   const handleMediaClick = () => {
-    window.open(item.url, '_blank', 'noopener,noreferrer');
+    window.open(item.url, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -36,13 +42,16 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
       transition={{ duration: 0.3 }}
     >
       {/* Media Content - Make it taller for larger cards */}
-      <div className="relative aspect-[4/3] bg-gray-100 dark:bg-gray-700 overflow-hidden cursor-pointer group" onClick={handleMediaClick}>
+      <div
+        className="relative aspect-[4/3] bg-gray-100 dark:bg-gray-700 overflow-hidden cursor-pointer group"
+        onClick={handleMediaClick}
+      >
         {mediaType === "video" ? (
           <video
             controls
             className="w-full h-full object-cover"
             src={item.url}
-            aria-label={t('a11y.mediaVideo', { filename: item.file_name })}
+            aria-label={t("a11y.mediaVideo", { filename: item.file_name })}
             preload="metadata"
             onClick={(e) => e.stopPropagation()} // Prevent opening in new tab when using video controls
           />
@@ -56,19 +65,29 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
             {imageError ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-200 dark:bg-gray-600">
                 <div className="text-gray-400 dark:text-gray-500 mb-2">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <svg
+                    className="w-8 h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
                   </svg>
                 </div>
                 <span className="text-gray-500 dark:text-gray-400 text-sm text-center px-2">
-                  {t('media.failedToLoad')}
+                  {t("media.failedToLoad")}
                 </span>
               </div>
             ) : (
               <img
                 alt={altText}
                 className={`media-image transition-all duration-300 ${
-                  imageLoaded ? 'loaded opacity-100' : 'loading opacity-0'
+                  imageLoaded ? "loaded opacity-100" : "loading opacity-0"
                 } group-hover:scale-105`}
                 src={item.url}
                 onLoad={() => setImageLoaded(true)}
@@ -96,34 +115,30 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
             <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full">
               <UserIcon className="h-4 w-4" />
             </div>
-            <span className="font-medium">{t('media.uploadedBy')}</span>
+            <span className="font-medium">{t("media.uploadedBy")}</span>
             <button
               onClick={() => onUserFilter?.(item.created_by)}
               className="text-gray-900 dark:text-white font-semibold hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 cursor-pointer underline decoration-transparent hover:decoration-current"
-              aria-label={t('media.filterByUser', { username: item.created_by })}
+              aria-label={t("media.filterByUser", {
+                username: item.created_by,
+              })}
             >
               {item.created_by}
             </button>
           </div>
         </div>
 
-
-        {/* Filename display */}
-        <div className="bg-gray-50 dark:bg-gray-750 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-          <div className="flex items-start space-x-3 rtl:space-x-reverse">
-            <div className="flex-shrink-0 p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{t('media.filename')}</p>
-              <p className="text-base font-semibold text-gray-900 dark:text-white font-mono bg-white dark:bg-gray-800 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600 break-all">
+        {/* Original filename */}
+        {item.original_filename && (
+          <div className="flex items-center space-x-3 rtl:space-x-reverse text-base">
+            <div className="flex items-center space-x-3 rtl:space-x-reverse text-gray-600 dark:text-gray-400">
+              <span className="font-medium">{t("media.filename")}:</span>
+              <span className="text-gray-900 dark:text-white font-mono text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded truncate">
                 {item.original_filename}
-              </p>
+              </span>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Date info */}
         <div className="flex items-center space-x-3 rtl:space-x-reverse text-base">
@@ -131,7 +146,9 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
             <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full">
               <CalendarIcon className="h-4 w-4" />
             </div>
-            <span className="text-gray-900 dark:text-white">{formatRelativeTime(item.created_at)}</span>
+            <span className="text-gray-900 dark:text-white">
+              {formatRelativeTime(item.created_at)}
+            </span>
           </div>
         </div>
 
@@ -140,16 +157,22 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => item.likedByUser ? handleUnlike(item.id) : handleLike(item.id)}
+            onClick={() =>
+              item.likedByUser ? handleUnlike(item.id) : handleLike(item.id)
+            }
             className="flex items-center space-x-3 rtl:space-x-reverse text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200 p-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
-            aria-label={item.likedByUser ? t('a11y.unlikeButton') : t('a11y.likeButton')}
+            aria-label={
+              item.likedByUser ? t("a11y.unlikeButton") : t("a11y.likeButton")
+            }
           >
             {item.likedByUser ? (
               <HeartSolidIcon className="h-6 w-6 text-red-500" />
             ) : (
               <HeartIcon className="h-6 w-6" />
             )}
-            <span className="font-medium text-base">{item.likes} {t('media.likes')}</span>
+            <span className="font-medium text-base">
+              {item.likes} {t("media.likes")}
+            </span>
           </motion.button>
 
           {item.deletable && (
@@ -158,10 +181,10 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
               variant="ghost"
               size="md"
               className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
-              aria-label={t('a11y.deleteButton')}
+              aria-label={t("a11y.deleteButton")}
             >
               <TrashIcon className="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" />
-              {t('media.delete')}
+              {t("media.delete")}
             </Button>
           )}
         </div>

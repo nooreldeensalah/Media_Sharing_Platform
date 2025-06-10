@@ -1,7 +1,7 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-import { Button } from './Button';
+import React from "react";
+import { motion } from "framer-motion";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { Button } from "./Button";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -13,7 +13,10 @@ interface ErrorBoundaryProps {
   fallback?: React.ComponentType<{ error?: Error; resetError: () => void }>;
 }
 
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -24,7 +27,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error("Error caught by boundary:", error, errorInfo);
   }
 
   resetError = () => {
@@ -35,10 +38,20 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     if (this.state.hasError) {
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;
-        return <FallbackComponent error={this.state.error} resetError={this.resetError} />;
+        return (
+          <FallbackComponent
+            error={this.state.error}
+            resetError={this.resetError}
+          />
+        );
       }
 
-      return <DefaultErrorFallback error={this.state.error} resetError={this.resetError} />;
+      return (
+        <DefaultErrorFallback
+          error={this.state.error}
+          resetError={this.resetError}
+        />
+      );
     }
 
     return this.props.children;
@@ -50,7 +63,10 @@ interface DefaultErrorFallbackProps {
   resetError: () => void;
 }
 
-const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({ error, resetError }) => {
+const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({
+  error,
+  resetError,
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -71,7 +87,8 @@ const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({ error, rese
         </h1>
 
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          We're sorry, but something unexpected happened. Please try refreshing the page or contact support if the problem persists.
+          We're sorry, but something unexpected happened. Please try refreshing
+          the page or contact support if the problem persists.
         </p>
 
         {import.meta.env.DEV && error && (

@@ -30,23 +30,23 @@ const MediaList: React.FC<MediaListProps> = ({
       setShowScrollTop(window.scrollY > 300);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollToTop = () => {
     // Scroll to upload section instead of very top
-    const uploadSection = document.getElementById('upload-section');
+    const uploadSection = document.getElementById("upload-section");
     if (uploadSection) {
-      uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      uploadSection.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleLike = async (id: number) => {
     try {
-      const response = await toggleLike(id, 'like');
+      const response = await toggleLike(id, "like");
       setMediaItems((prev) =>
         prev.map((item) =>
           item.id === id
@@ -61,7 +61,7 @@ const MediaList: React.FC<MediaListProps> = ({
 
   const handleUnlike = async (id: number) => {
     try {
-      const response = await toggleLike(id, 'unlike');
+      const response = await toggleLike(id, "unlike");
       setMediaItems((prev) =>
         prev.map((item) =>
           item.id === id
@@ -95,7 +95,9 @@ const MediaList: React.FC<MediaListProps> = ({
               return {
                 ...prevPagination,
                 totalItems: newTotalItems,
-                totalPages: Math.ceil(newTotalItems / prevPagination.itemsPerPage)
+                totalPages: Math.ceil(
+                  newTotalItems / prevPagination.itemsPerPage,
+                ),
               };
             }
             return prevPagination;
@@ -117,7 +119,7 @@ const MediaList: React.FC<MediaListProps> = ({
       <div className="space-y-6">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
-            {t('media.gallery')}
+            {t("media.gallery")}
           </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -155,10 +157,10 @@ const MediaList: React.FC<MediaListProps> = ({
           >
             <div className="text-6xl mb-4">📸</div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              {t('media.noMedia')}
+              {t("media.noMedia")}
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              {t('media.startUploading')}
+              {t("media.startUploading")}
             </p>
           </motion.div>
         ) : (
@@ -227,8 +229,8 @@ const MediaList: React.FC<MediaListProps> = ({
               variant="primary"
               size="sm"
               className="rounded-full p-3 shadow-lg"
-              aria-label={t('general.scrollToTop')}
-              title={t('general.scrollToTop')}
+              aria-label={t("general.scrollToTop")}
+              title={t("general.scrollToTop")}
             >
               <ArrowUpIcon className="h-5 w-5" />
             </Button>

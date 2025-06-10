@@ -13,7 +13,10 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{
+    username?: string;
+    password?: string;
+  }>({});
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -21,11 +24,11 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     const newErrors: { username?: string; password?: string } = {};
 
     if (!username.trim()) {
-      newErrors.username = t('validation.usernameRequired');
+      newErrors.username = t("validation.usernameRequired");
     }
 
     if (!password) {
-      newErrors.password = t('validation.passwordRequired');
+      newErrors.password = t("validation.passwordRequired");
     }
 
     setErrors(newErrors);
@@ -42,7 +45,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
       const { token } = await loginUser(username, password);
       localStorage.setItem("token", token);
       setIsAuthenticated(true);
-      toast.success(t('auth.welcome', { username }));
+      toast.success(t("auth.welcome", { username }));
       navigate("/");
     } catch (err) {
       toast.error((err as Error).message);
@@ -69,17 +72,17 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
             <UserIcon className="h-8 w-8 text-white" />
           </motion.div>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {t('auth.login')}
+            {t("auth.login")}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            {t('auth.loginSubtitle')}
+            {t("auth.loginSubtitle")}
           </p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <Input
             type="text"
-            placeholder={t('auth.username')}
+            placeholder={t("auth.username")}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             error={errors.username}
@@ -90,7 +93,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
 
           <Input
             type="password"
-            placeholder={t('auth.password')}
+            placeholder={t("auth.password")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             error={errors.password}
@@ -105,7 +108,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
             className="w-full"
             size="lg"
           >
-            {t('auth.loginButton')}
+            {t("auth.loginButton")}
           </Button>
         </form>
 
@@ -116,12 +119,12 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
           className="mt-8 text-center"
         >
           <p className="text-gray-600 dark:text-gray-400">
-            {t('auth.notRegistered')}{" "}
+            {t("auth.notRegistered")}{" "}
             <Link
               to="/register"
               className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors duration-200"
             >
-              {t('auth.registerHere')}
+              {t("auth.registerHere")}
             </Link>
           </p>
         </motion.div>

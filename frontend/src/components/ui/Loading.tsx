@@ -1,60 +1,54 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '../../utils';
+import React from "react";
+import { motion } from "framer-motion";
+import { cn } from "../../utils";
 
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
 }
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
-  size = 'md',
-  className
+  size = "md",
+  className,
 }) => {
   const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-8 w-8',
-    lg: 'h-12 w-12'
+    sm: "h-4 w-4",
+    md: "h-8 w-8",
+    lg: "h-12 w-12",
   };
 
   return (
     <motion.div
       className={cn(
-        'animate-spin rounded-full border-2 border-gray-300 border-t-primary-600',
+        "animate-spin rounded-full border-2 border-gray-300 border-t-primary-600",
         sizeClasses[size],
-        className
+        className,
       )}
       animate={{ rotate: 360 }}
-      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
     />
   );
 };
 
 interface LoadingSkeletonProps {
   className?: string;
-  variant?: 'text' | 'rectangular' | 'circular';
+  variant?: "text" | "rectangular" | "circular";
 }
 
 export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
   className,
-  variant = 'rectangular'
+  variant = "rectangular",
 }) => {
-  const baseClasses = 'animate-pulse bg-gray-200 dark:bg-gray-700';
+  const baseClasses = "animate-pulse bg-gray-200 dark:bg-gray-700";
 
   const variantClasses = {
-    text: 'h-4 rounded',
-    rectangular: 'rounded-lg',
-    circular: 'rounded-full'
+    text: "h-4 rounded",
+    rectangular: "rounded-lg",
+    circular: "rounded-full",
   };
 
   return (
-    <div
-      className={cn(
-        baseClasses,
-        variantClasses[variant],
-        className
-      )}
-    />
+    <div className={cn(baseClasses, variantClasses[variant], className)} />
   );
 };
 

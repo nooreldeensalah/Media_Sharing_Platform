@@ -53,7 +53,12 @@ const AppContent: React.FC = () => {
       if (isAuthenticated) {
         setIsLoading(true);
         try {
-          const response = await getAllMedia(page, 8, user || undefined, search || undefined);
+          const response = await getAllMedia(
+            page,
+            8,
+            user || undefined,
+            search || undefined,
+          );
           if (response.data) {
             setMediaItems(response.data);
             setPagination(response.pagination);
@@ -68,7 +73,7 @@ const AppContent: React.FC = () => {
         }
       }
     },
-    [isAuthenticated]
+    [isAuthenticated],
   );
 
   // Fetch media when authentication state, search, or user filter changes
@@ -107,7 +112,7 @@ const AppContent: React.FC = () => {
           return {
             ...prevPagination,
             totalItems: newTotalItems,
-            totalPages: Math.ceil(newTotalItems / prevPagination.itemsPerPage)
+            totalPages: Math.ceil(newTotalItems / prevPagination.itemsPerPage),
           };
         } else {
           return {
@@ -116,7 +121,7 @@ const AppContent: React.FC = () => {
             totalItems: 1,
             itemsPerPage: 10,
             hasNextPage: false,
-            hasPreviousPage: false
+            hasPreviousPage: false,
           };
         }
       });
@@ -124,9 +129,9 @@ const AppContent: React.FC = () => {
 
     // Scroll to gallery section to show the new item
     setTimeout(() => {
-      const gallerySection = document.getElementById('gallery-section');
+      const gallerySection = document.getElementById("gallery-section");
       if (gallerySection) {
-        gallerySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        gallerySection.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }, 100);
   };

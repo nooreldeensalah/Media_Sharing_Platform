@@ -2,7 +2,11 @@ import React, { useState, FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { UserPlusIcon, UserIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import {
+  UserPlusIcon,
+  UserIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/outline";
 import { registerUser } from "../api";
 import { toast } from "react-toastify";
 import { Button } from "./ui/Button";
@@ -16,7 +20,11 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ username?: string; password?: string; confirmPassword?: string }>({});
+  const [errors, setErrors] = useState<{
+    username?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -27,28 +35,34 @@ const Register: React.FC = () => {
   const isPasswordValid = password && passwordStrength.score >= 3;
   const passwordsMatch = password === confirmPassword && password !== "";
 
-  const showPasswordMismatch = debouncedConfirmPassword && debouncedPassword &&
+  const showPasswordMismatch =
+    debouncedConfirmPassword &&
+    debouncedPassword &&
     debouncedPassword !== debouncedConfirmPassword;
 
   const validateForm = () => {
-    const newErrors: { username?: string; password?: string; confirmPassword?: string } = {};
+    const newErrors: {
+      username?: string;
+      password?: string;
+      confirmPassword?: string;
+    } = {};
 
     if (!username.trim()) {
-      newErrors.username = t('validation.usernameRequired');
+      newErrors.username = t("validation.usernameRequired");
     } else if (username.length < 3) {
-      newErrors.username = t('validation.usernameMinLength');
+      newErrors.username = t("validation.usernameMinLength");
     }
 
     if (!password) {
-      newErrors.password = t('validation.passwordRequired');
+      newErrors.password = t("validation.passwordRequired");
     } else if (passwordStrength.score < 3) {
-      newErrors.password = t('validation.passwordWeak');
+      newErrors.password = t("validation.passwordWeak");
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = t('validation.confirmPasswordRequired');
+      newErrors.confirmPassword = t("validation.confirmPasswordRequired");
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = t('validation.passwordMismatch');
+      newErrors.confirmPassword = t("validation.passwordMismatch");
     }
 
     setErrors(newErrors);
@@ -63,7 +77,7 @@ const Register: React.FC = () => {
     setIsLoading(true);
     try {
       await registerUser(username, password);
-      toast.success(t('auth.registerSuccess'));
+      toast.success(t("auth.registerSuccess"));
       navigate("/login");
     } catch (err) {
       toast.error((err as Error).message);
@@ -90,17 +104,17 @@ const Register: React.FC = () => {
             <UserPlusIcon className="h-8 w-8 text-white" />
           </motion.div>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {t('auth.register')}
+            {t("auth.register")}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            {t('auth.registerSubtitle')}
+            {t("auth.registerSubtitle")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
             type="text"
-            placeholder={t('auth.username')}
+            placeholder={t("auth.username")}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             error={errors.username}
@@ -112,7 +126,7 @@ const Register: React.FC = () => {
           <div className="space-y-2">
             <Input
               type="password"
-              placeholder={t('auth.password')}
+              placeholder={t("auth.password")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               error={errors.password}
@@ -127,10 +141,15 @@ const Register: React.FC = () => {
 
           <Input
             type="password"
-            placeholder={t('auth.confirmPassword')}
+            placeholder={t("auth.confirmPassword")}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            error={errors.confirmPassword || (showPasswordMismatch ? t('validation.passwordMismatch') : undefined)}
+            error={
+              errors.confirmPassword ||
+              (showPasswordMismatch
+                ? t("validation.passwordMismatch")
+                : undefined)
+            }
             icon={<LockClosedIcon className="h-5 w-5" />}
             autoComplete="new-password"
             required
@@ -143,7 +162,7 @@ const Register: React.FC = () => {
             className="w-full"
             size="lg"
           >
-            {t('auth.registerButton')}
+            {t("auth.registerButton")}
           </Button>
         </form>
 
@@ -154,12 +173,12 @@ const Register: React.FC = () => {
           className="mt-8 text-center"
         >
           <p className="text-gray-600 dark:text-gray-400">
-            {t('auth.alreadyRegistered')}{" "}
+            {t("auth.alreadyRegistered")}{" "}
             <Link
               to="/login"
               className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors duration-200"
             >
-              {t('auth.loginHere')}
+              {t("auth.loginHere")}
             </Link>
           </p>
         </motion.div>

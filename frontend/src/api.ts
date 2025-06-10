@@ -45,15 +45,15 @@ export const getAllMedia = async (
   page: number = 1,
   limit: number = 20,
   user?: string,
-  search?: string
+  search?: string,
 ) => {
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
   });
 
-  if (user) params.append('user', user);
-  if (search) params.append('search', search);
+  if (user) params.append("user", user);
+  if (search) params.append("search", search);
 
   const response = await fetch(`${BASE_URL}/media?${params.toString()}`, {
     headers: getAuthHeaders(),
@@ -78,7 +78,11 @@ export const uploadMedia = async (file: File) => {
       "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify({ fileName, mimeType: file.type, originalFilename: file.name }),
+    body: JSON.stringify({
+      fileName,
+      mimeType: file.type,
+      originalFilename: file.name,
+    }),
   });
 
   if (!preSignedResponse.ok) {
@@ -106,7 +110,11 @@ export const uploadMedia = async (file: File) => {
       "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify({ fileName, mimeType: file.type, originalFilename: file.name }),
+    body: JSON.stringify({
+      fileName,
+      mimeType: file.type,
+      originalFilename: file.name,
+    }),
   });
 
   if (!notifyResponse.ok) {
@@ -128,7 +136,7 @@ export const deleteMedia = async (id: number) => {
   return response.json();
 };
 
-export const toggleLike = async (id: number, action: 'like' | 'unlike') => {
+export const toggleLike = async (id: number, action: "like" | "unlike") => {
   const response = await fetch(`${BASE_URL}/media/${id}/toggle-like`, {
     method: "POST",
     headers: {
@@ -142,5 +150,3 @@ export const toggleLike = async (id: number, action: 'like' | 'unlike') => {
   }
   return response.json();
 };
-
-

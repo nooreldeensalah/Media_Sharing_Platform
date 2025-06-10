@@ -28,10 +28,10 @@ const NavBar: React.FC<NavBarProps> = ({ isAuthenticated, handleLogout }) => {
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-400 dark:to-primary-600 bg-clip-text text-transparent">
-                {t('nav.title')}
+                {t("nav.title")}
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
-                {t('nav.subtitle')}
+                {t("nav.subtitle")}
               </p>
             </div>
           </motion.div>
@@ -47,7 +47,7 @@ const NavBar: React.FC<NavBarProps> = ({ isAuthenticated, handleLogout }) => {
                 size="sm"
                 className="border-red-400 text-red-700 hover:bg-red-100 hover:border-red-500 hover:text-red-800 focus:ring-red-500 dark:border-red-500 dark:text-red-400 dark:hover:bg-red-900/30 dark:hover:border-red-400 dark:hover:text-red-300 transition-all duration-200"
               >
-                {t('nav.logout')}
+                {t("nav.logout")}
               </Button>
             )}
           </div>
