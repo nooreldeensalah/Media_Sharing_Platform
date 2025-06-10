@@ -6,10 +6,10 @@ import { handleServiceError } from '../../utils/errorHandler';
 const getAllMedia: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.get('/', { schema: getAllMediaSchema, onRequest: [fastify.authenticate] }, async (request, reply) => {
     const user = request.user as AuthenticatedUser;
-    const { page = 1, limit = 10 } = request.query as PaginationParams;
+    const { page = 1, limit = 10, user: filterUser, search } = request.query as PaginationParams & { user?: string, search?: string };
 
     try {
-      const result = await fastify.mediaService.getAllMediaPaginated(page, limit, user.id, user.username);
+      const result = await fastify.mediaService.getAllMediaPaginated(page, limit, user.id, user.username, filterUser, search);
 
       if (result.data.length === 0 && page === 1) {
         return reply.status(204).send();

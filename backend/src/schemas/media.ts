@@ -6,7 +6,9 @@ export const getAllMediaSchema = {
     type: "object",
     properties: {
       page: { type: "integer", minimum: 1, default: 1 },
-      limit: { type: "integer", minimum: 1, maximum: 100, default: 10 }
+      limit: { type: "integer", minimum: 1, maximum: 100, default: 10 },
+      user: { type: "string", description: "Filter by username" },
+      search: { type: "string", description: "Search in file names" }
     }
   },
   response: {

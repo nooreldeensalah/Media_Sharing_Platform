@@ -18,6 +18,7 @@ const MediaList: React.FC<MediaListProps> = ({
   setPagination,
   onPageChange,
   isLoading = false,
+  onUserFilter,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
@@ -197,6 +198,7 @@ const MediaList: React.FC<MediaListProps> = ({
                   handleLike={handleLike}
                   handleUnlike={handleUnlike}
                   confirmDelete={confirmDelete}
+                  onUserFilter={onUserFilter}
                 />
               </motion.div>
             ))}

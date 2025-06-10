@@ -41,10 +41,24 @@ const getAuthHeaders = () => {
   return token ? { Authorization: `Bearer ${token}` } : undefined;
 };
 
-export const getAllMedia = async (page: number = 1, limit: number = 20) => {
-  const response = await fetch(`${BASE_URL}/media?page=${page}&limit=${limit}`, {
+export const getAllMedia = async (
+  page: number = 1,
+  limit: number = 20,
+  user?: string,
+  search?: string
+) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+
+  if (user) params.append('user', user);
+  if (search) params.append('search', search);
+
+  const response = await fetch(`${BASE_URL}/media?${params.toString()}`, {
     headers: getAuthHeaders(),
   });
+
   if (response.status === 204) {
     return { data: [], pagination: null };
   }

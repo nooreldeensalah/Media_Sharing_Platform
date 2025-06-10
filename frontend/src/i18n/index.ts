@@ -41,6 +41,22 @@ const resources = {
       'media.deleteMessage': 'Are you sure you want to delete this media item?',
       'media.cancel': 'Cancel',
       'media.noMedia': 'No media files found',
+      'media.openInNewTab': 'Open in new tab',
+      'media.pressEscToClose': 'Press ESC to close',
+      'media.filterByUser': 'Filter by {{username}}',
+
+      // Delete Confirmation Modal
+      'media.deleteConfirm.title': 'Delete Media',
+      'media.deleteConfirm.message': 'Are you sure you want to delete this media item? This action cannot be undone.',
+      'media.deleteConfirm.confirm': 'Delete',
+
+      // Search and Filters
+      'media.search.placeholder': 'Search media files...',
+      'media.search.submit': 'Search',
+      'media.filters.active': 'Active filters',
+      'media.filters.removeSearch': 'Remove search filter',
+      'media.filters.removeUser': 'Remove user filter',
+      'media.filters.clearAll': 'Clear all filters',
 
       // Pagination
       'pagination.previous': 'Previous',
@@ -57,6 +73,8 @@ const resources = {
       'general.retry': 'Retry',
       'general.close': 'Close',
       'general.save': 'Save',
+      'general.cancel': 'Cancel',
+      'general.clear': 'Clear',
       'general.scrollToTop': 'Scroll to top',
       'general.justNow': 'Just now',
       'general.open': 'Open',
@@ -149,6 +167,22 @@ const resources = {
       'media.deleteMessage': 'هل أنت متأكد من حذف هذا الملف؟',
       'media.cancel': 'إلغاء',
       'media.noMedia': 'لم يتم العثور على ملفات وسائط',
+      'media.openInNewTab': 'فتح في علامة تبويب جديدة',
+      'media.pressEscToClose': 'اضغط ESC للإغلاق',
+      'media.filterByUser': 'تصفية بواسطة {{username}}',
+
+      // Delete Confirmation Modal
+      'media.deleteConfirm.title': 'حذف الوسائط',
+      'media.deleteConfirm.message': 'هل أنت متأكد من حذف هذا الملف الوسائطي؟ هذا الإجراء لا يمكن التراجع عنه.',
+      'media.deleteConfirm.confirm': 'حذف',
+
+      // Search and Filters
+      'media.search.placeholder': 'البحث في ملفات الوسائط...',
+      'media.search.submit': 'بحث',
+      'media.filters.active': 'المرشحات النشطة',
+      'media.filters.removeSearch': 'إزالة مرشح البحث',
+      'media.filters.removeUser': 'إزالة مرشح المستخدم',
+      'media.filters.clearAll': 'مسح جميع المرشحات',
 
       // Pagination
       'pagination.previous': 'السابق',
@@ -165,6 +199,8 @@ const resources = {
       'general.retry': 'إعادة المحاولة',
       'general.close': 'إغلاق',
       'general.save': 'حفظ',
+      'general.cancel': 'إلغاء',
+      'general.clear': 'مسح',
       'general.scrollToTop': 'العودة إلى الأعلى',
       'general.justNow': 'الآن',
       'general.open': 'فتح',

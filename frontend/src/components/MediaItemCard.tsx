@@ -96,7 +96,13 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
               <UserIcon className="h-3.5 w-3.5" />
             </div>
             <span className="font-medium">{t('media.uploadedBy')}</span>
-            <span className="text-gray-900 dark:text-white font-semibold">{item.created_by}</span>
+            <button
+              onClick={() => onUserFilter?.(item.created_by)}
+              className="text-gray-900 dark:text-white font-semibold hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 cursor-pointer underline decoration-transparent hover:decoration-current"
+              aria-label={t('media.filterByUser', { username: item.created_by })}
+            >
+              {item.created_by}
+            </button>
           </div>
         </div>
 

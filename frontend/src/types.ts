@@ -41,6 +41,7 @@ export interface MediaListProps {
   setPagination?: React.Dispatch<React.SetStateAction<PaginationMetadata | null>>;
   onPageChange?: (page: number) => void;
   isLoading?: boolean;
+  onUserFilter?: (username: string) => void;
 }
 
 export interface FileInputProps {
@@ -63,6 +64,7 @@ export interface MediaItemCardProps {
   handleLike: (id: number) => void;
   handleUnlike: (id: number) => void;
   confirmDelete: (id: number) => void;
+  onUserFilter?: (username: string) => void;
 }
 
 export type PasswordStrength = {

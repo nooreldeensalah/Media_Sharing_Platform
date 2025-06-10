@@ -40,7 +40,9 @@ export class MediaService {
     page: number,
     limit: number,
     userId: number,
-    username: string
+    username: string,
+    filterUser?: string,
+    search?: string
   ): Promise<PaginatedMediaResponse> {
     if (page < 1) {
       const error = new Error('Page must be a positive integer') as ServiceError;
@@ -56,9 +58,25 @@ export class MediaService {
 
     const offset = (page - 1) * limit;
 
+    // Build WHERE clause conditions
+    const conditions: string[] = [];
+    const params: any[] = [];
+
+    if (filterUser) {
+      conditions.push('media.created_by = ?');
+      params.push(filterUser);
+    }
+
+    if (search) {
+      conditions.push('media.file_name LIKE ?');
+      params.push(`%${search}%`);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
     const totalCount = this.fastify.sqlite.prepare(`
-      SELECT COUNT(*) as total FROM media
-    `).get() as { total: number };
+      SELECT COUNT(*) as total FROM media ${whereClause}
+    `).get(...params) as { total: number };
 
     const rows = this.fastify.sqlite.prepare(`
       SELECT media.*, users.username,
@@ -67,9 +85,10 @@ export class MediaService {
       FROM media
       LEFT JOIN likes ON media.id = likes.media_id AND likes.user_id = ?
       LEFT JOIN users ON media.created_by = users.username
+      ${whereClause}
       ORDER BY media.created_at DESC, media.id DESC
       LIMIT ? OFFSET ?
-    `).all(username, userId, limit, offset) as MediaItemWithUserInfo[];
+    `).all(username, userId, ...params, limit, offset) as MediaItemWithUserInfo[];
 
     const totalPages = Math.ceil(totalCount.total / limit);
 

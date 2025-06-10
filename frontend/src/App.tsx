@@ -9,6 +9,7 @@ import { flushSync } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import MediaList from "./components/MediaList";
 import UploadMedia from "./components/UploadMedia";
+import SearchAndFilter from "./components/SearchAndFilter";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import NavBar from "./components/NavBar";
@@ -18,6 +19,7 @@ import { getAllMedia } from "./api";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MediaItem, PaginationMetadata } from "./types";
+import { useDebounce } from "./hooks/useDebounce";
 import "./i18n";
 
 const App: React.FC = () => {
@@ -39,14 +41,19 @@ const AppContent: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
     !!localStorage.getItem("token"),
   );
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [userFilter, setUserFilter] = useState<string | null>(null);
   const lastItemRef = useRef<HTMLDivElement | null>(null);
 
+  // Debounce search query to avoid excessive API calls
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
   const fetchMedia = React.useCallback(
-    async (page: number = 1) => {
+    async (page: number = 1, search?: string, user?: string | null) => {
       if (isAuthenticated) {
         setIsLoading(true);
         try {
-          const response = await getAllMedia(page, 8);
+          const response = await getAllMedia(page, 8, user || undefined, search || undefined);
           if (response.data) {
             setMediaItems(response.data);
             setPagination(response.pagination);
@@ -64,9 +71,23 @@ const AppContent: React.FC = () => {
     [isAuthenticated]
   );
 
+  // Fetch media when authentication state, search, or user filter changes
   useEffect(() => {
-    fetchMedia(1);
-  }, [isAuthenticated, fetchMedia]);
+    fetchMedia(1, debouncedSearchQuery, userFilter);
+  }, [isAuthenticated, debouncedSearchQuery, userFilter, fetchMedia]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleUserFilter = (username: string | null) => {
+    setUserFilter(username);
+  };
+
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setUserFilter(null);
+  };
 
   const addNewMediaItem = (newMedia: MediaItem) => {
     flushSync(() => {
@@ -111,7 +132,7 @@ const AppContent: React.FC = () => {
   };
 
   const handlePageChange = (page: number) => {
-    fetchMedia(page);
+    fetchMedia(page, debouncedSearchQuery, userFilter);
   };
 
   const handleLogout = () => {
@@ -167,6 +188,13 @@ const AppContent: React.FC = () => {
                         <section id="upload-section" className="mb-8">
                           <UploadMedia addNewMediaItem={addNewMediaItem} />
                         </section>
+                        <SearchAndFilter
+                          onSearch={handleSearch}
+                          onUserFilter={handleUserFilter}
+                          currentSearch={searchQuery}
+                          currentUserFilter={userFilter}
+                          onClearFilters={handleClearFilters}
+                        />
                         <section id="gallery-section">
                           <MediaList
                             mediaItems={mediaItems}
@@ -176,6 +204,7 @@ const AppContent: React.FC = () => {
                             setPagination={setPagination}
                             onPageChange={handlePageChange}
                             isLoading={isLoading}
+                            onUserFilter={handleUserFilter}
                           />
                         </section>
                       </motion.div>
