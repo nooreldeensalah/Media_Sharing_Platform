@@ -20,7 +20,7 @@ const NavBar: React.FC<NavBarProps> = ({ isAuthenticated, handleLogout }) => {
       <div className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <motion.div
-            className="flex items-center space-x-3 rtl:space-x-reverse"
+            className="flex items-center space-x-3 rtl:space-x-reverse logo"
             whileHover={{ scale: 1.02 }}
           >
             <div className="bg-gradient-to-br from-primary-500 to-primary-700 p-2 rounded-lg">
@@ -45,7 +45,7 @@ const NavBar: React.FC<NavBarProps> = ({ isAuthenticated, handleLogout }) => {
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+                className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 hover:text-red-700 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
               >
                 {t('nav.logout')}
               </Button>

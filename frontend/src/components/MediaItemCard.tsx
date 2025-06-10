@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { HeartIcon, TrashIcon, UserIcon, CalendarIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import { Button } from "./ui/Button";
+import ImageViewerModal from "./ImageViewerModal";
 import { MediaItemCardProps } from "../types";
 import { generateMediaAlt, getMediaType } from "../utils";
 import { useRelativeTime } from "../hooks/useRelativeTime";
@@ -13,9 +14,11 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
   handleLike,
   handleUnlike,
   confirmDelete,
+  onUserFilter,
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [showImageViewer, setShowImageViewer] = useState(false);
   const { t } = useTranslation();
   const formatRelativeTime = useRelativeTime();
 
@@ -23,14 +26,17 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
   const altText = generateMediaAlt(item.file_name, item.mimetype);
 
   const handleMediaClick = () => {
-    window.open(item.url, '_blank', 'noopener,noreferrer');
+    if (mediaType === "video") {
+      window.open(item.url, '_blank', 'noopener,noreferrer');
+    } else {
+      setShowImageViewer(true);
+    }
   };
 
   return (
     <motion.div
       layout
-      className="group bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-xl dark:hover:shadow-gray-900/70 transition-all duration-300"
-      whileHover={{ y: -5 }}
+      className="group bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 overflow-hidden border border-gray-200 dark:border-gray-700 card-hover"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
@@ -67,7 +73,7 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
             ) : (
               <img
                 alt={altText}
-                className={`w-full h-full object-cover transition-all duration-300 ${
+                className={`w-full h-full media-image transition-all duration-300 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 } group-hover:scale-105`}
                 src={item.url}
@@ -147,6 +153,15 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
           )}
         </div>
       </div>
+
+      {/* Image Viewer Modal */}
+      <ImageViewerModal
+        isOpen={showImageViewer}
+        onClose={() => setShowImageViewer(false)}
+        imageUrl={item.url}
+        imageName={item.file_name}
+        imageAlt={altText}
+      />
     </motion.div>
   );
 };
