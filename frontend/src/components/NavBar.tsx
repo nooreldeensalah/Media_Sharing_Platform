@@ -17,7 +17,7 @@ const NavBar: React.FC<NavBarProps> = ({ isAuthenticated, handleLogout }) => {
       transition={{ duration: 0.5 }}
       className="w-full bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900/50 mb-6 transition-colors duration-200"
     >
-      <div className="max-w-6xl mx-auto px-4 py-4">
+      <div className="max-w-[1600px] mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
           <motion.div
             className="flex items-center space-x-3 rtl:space-x-reverse logo"
@@ -26,7 +26,7 @@ const NavBar: React.FC<NavBarProps> = ({ isAuthenticated, handleLogout }) => {
             <div className="bg-gradient-to-br from-primary-500 to-primary-700 p-2 rounded-lg">
               <PhotoIcon className="h-8 w-8 text-white" />
             </div>
-            <div className="min-w-0 flex-1">
+            <div>
               <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-400 dark:to-primary-600 bg-clip-text text-transparent">
                 {t("nav.title")}
               </h1>
@@ -36,7 +36,7 @@ const NavBar: React.FC<NavBarProps> = ({ isAuthenticated, handleLogout }) => {
             </div>
           </motion.div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 rtl:space-x-reverse">
             <ThemeToggle />
             <LanguageSelector />
 
