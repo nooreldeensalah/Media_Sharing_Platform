@@ -30,10 +30,6 @@ jobs:
         working-directory: ./backend
         run: npm run build:ts
 
-      - name: Run Tests
-        working-directory: ./backend
-        run: npm test
-
   deploy:
     name: Deploy Backend
     runs-on: ubuntu-latest

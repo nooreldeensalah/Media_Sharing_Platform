@@ -152,22 +152,6 @@ const MediaList: React.FC<MediaListProps> = ({
         )}
       </motion.div>
 
-      {/* Top pagination */}
-      {pagination && onPageChange && (
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mb-6"
-        >
-          <Pagination
-            pagination={pagination}
-            onPageChange={onPageChange}
-            isLoading={isLoading}
-          />
-        </motion.div>
-      )}
-
       {/* Loading indicator */}
       {isLoading && (
         <div className="flex justify-center items-center py-8">
@@ -196,7 +180,7 @@ const MediaList: React.FC<MediaListProps> = ({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.3 }}
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
           >
             {mediaItems.map((item, index) => (
