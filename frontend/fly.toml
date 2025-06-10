@@ -1,0 +1,28 @@
+# Fly.io Frontend Configuration
+app = "media-platform-frontend"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+  [build.args]
+    VITE_API_BASE_URL = "https://media-platform-backend.fly.dev"
+
+[env]
+  PORT = "80"
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
+
+[deploy]
+  strategy = "immediate"
+
+[metrics]
+  enabled = false
