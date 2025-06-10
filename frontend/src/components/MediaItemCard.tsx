@@ -7,6 +7,7 @@ import {
   UserIcon,
   CalendarIcon,
   ArrowTopRightOnSquareIcon,
+  DocumentIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import { Button } from "./ui/Button";
@@ -115,7 +116,6 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
             <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full">
               <UserIcon className="h-4 w-4" />
             </div>
-            <span className="font-medium">{t("media.uploadedBy")}</span>
             <button
               onClick={() => onUserFilter?.(item.created_by)}
               className="text-gray-900 dark:text-white font-semibold hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200 cursor-pointer underline decoration-transparent hover:decoration-current"
@@ -128,12 +128,14 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
           </div>
         </div>
 
-        {/* Original filename */}
+        {/* Filename */}
         {item.original_filename && (
           <div className="flex items-center space-x-3 rtl:space-x-reverse text-base">
-            <div className="flex items-center space-x-3 rtl:space-x-reverse text-gray-600 dark:text-gray-400">
-              <span className="font-medium">{t("media.filename")}:</span>
-              <span className="text-gray-900 dark:text-white font-mono text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded truncate">
+            <div className="flex items-center space-x-3 rtl:space-x-reverse text-gray-600 dark:text-gray-400 min-w-0 flex-1">
+              <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full flex-shrink-0">
+                <DocumentIcon className="h-4 w-4" />
+              </div>
+              <span className="text-gray-900 dark:text-white font-mono text-sm bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded min-w-0 flex-1 truncate">
                 {item.original_filename}
               </span>
             </div>
