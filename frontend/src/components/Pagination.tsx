@@ -50,6 +50,20 @@ const Pagination: React.FC<PaginationProps> = ({
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center space-y-4 py-6"
     >
+      {/* Page info and item count - moved above pagination */}
+      <div className="flex flex-col items-center space-y-1 text-sm text-gray-600 dark:text-gray-400">
+        <div>
+          {t("pagination.page", { current: currentPage, total: totalPages })}
+        </div>
+        <div>
+          {t("pagination.showing", {
+            start: startItem,
+            end: endItem,
+            total: totalItems,
+          })}
+        </div>
+      </div>
+
       {/* Navigation buttons */}
       <div className="flex items-center space-x-2 rtl:space-x-reverse">
         <motion.button
@@ -88,20 +102,6 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           {t("pagination.next")}
         </motion.button>
-      </div>
-
-      {/* Page info and item count - moved below pagination */}
-      <div className="flex flex-col items-center space-y-1 text-sm text-gray-600 dark:text-gray-400">
-        <div>
-          {t("pagination.page", { current: currentPage, total: totalPages })}
-        </div>
-        <div>
-          {t("pagination.showing", {
-            start: startItem,
-            end: endItem,
-            total: totalItems,
-          })}
-        </div>
       </div>
     </motion.div>
   );
