@@ -16,7 +16,7 @@ export const registerSchema = {
       username: { type: 'string', minLength: 3, maxLength: 50 },
       password: {
         type: 'string',
-        pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.-])[A-Za-z\\d@$!%*?&.-]{8,}$'
+        pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?":{}|<>-])[A-Za-z\\d!@#$%^&*(),.?":{}|<>-]{8,}$'
       }
     }
   },
