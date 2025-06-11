@@ -2,36 +2,62 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { PasswordStrength } from "../utils/passwordUtils";
 import { PasswordStrengthIndicatorProps } from "../types";
+import { useTheme } from "../contexts/ThemeContext";
+import { getColors } from "../constants/Colors";
+import { useTranslation } from "react-i18next";
 
 interface Requirement {
   key: keyof PasswordStrength;
-  label: string;
+  labelKey: string;
   icon: string;
 }
 
 const requirements: Requirement[] = [
-  { key: "hasLength", label: "At least 8 characters", icon: "📏" },
-  { key: "hasUpper", label: "One uppercase letter (A-Z)", icon: "🔤" },
-  { key: "hasLower", label: "One lowercase letter (a-z)", icon: "🔡" },
-  { key: "hasNumber", label: "One number (0-9)", icon: "🔢" },
-  { key: "hasSpecial", label: "One special character (!@#$%^&*)", icon: "⚡" },
+  {
+    key: "hasLength",
+    labelKey: "At least 8 characters",
+    icon: "📏",
+  },
+  {
+    key: "hasUpper",
+    labelKey: "One uppercase letter (A-Z)",
+    icon: "🔤",
+  },
+  {
+    key: "hasLower",
+    labelKey: "One lowercase letter (a-z)",
+    icon: "🔡",
+  },
+  {
+    key: "hasNumber",
+    labelKey: "One number (0-9)",
+    icon: "🔢",
+  },
+  {
+    key: "hasSpecial",
+    labelKey: "One special character (!@#$%^&*)",
+    icon: "⚡",
+  },
 ];
 
 const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
   strength,
 }) => {
+  const { colorScheme } = useTheme();
+  const colors = getColors(colorScheme);
+  const { t } = useTranslation();
   const metRequirements = Object.values(strength).filter(Boolean).length;
 
   const getStrengthLevel = () => {
     if (metRequirements === 0)
-      return { label: "Very Weak", color: "#ef4444", width: 0 };
+      return { labelKey: "passwordWeak", color: colors.error, width: 0 };
     if (metRequirements <= 2)
-      return { label: "Weak", color: "#f87171", width: 0.4 };
+      return { labelKey: "passwordWeak", color: colors.error, width: 0.4 };
     if (metRequirements <= 3)
-      return { label: "Fair", color: "#fbbf24", width: 0.6 };
+      return { labelKey: "passwordMedium", color: colors.warning, width: 0.6 };
     if (metRequirements <= 4)
-      return { label: "Good", color: "#3b82f6", width: 0.8 };
-    return { label: "Strong", color: "#22c55e", width: 1 };
+      return { labelKey: "passwordStrong", color: colors.info, width: 0.8 };
+    return { labelKey: "passwordVeryStrong", color: colors.success, width: 1 };
   };
 
   const strengthLevel = getStrengthLevel();
@@ -40,13 +66,20 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
     <View style={styles.container}>
       <View style={styles.strengthSection}>
         <View style={styles.strengthHeader}>
-          <Text style={styles.strengthTitle}>Password Strength</Text>
+          <Text style={[styles.strengthTitle, { color: colors.text }]}>
+            Password Strength
+          </Text>
           <Text style={[styles.strengthLabel, { color: strengthLevel.color }]}>
-            {strengthLevel.label}
+            {t(strengthLevel.labelKey)}
           </Text>
         </View>
 
-        <View style={styles.progressBarContainer}>
+        <View
+          style={[
+            styles.progressBarContainer,
+            { backgroundColor: colors.border },
+          ]}
+        >
           <View
             style={[
               styles.progressBar,
@@ -61,9 +94,11 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
       </View>
 
       <View style={styles.requirementsSection}>
-        <Text style={styles.requirementsTitle}>Requirements:</Text>
+        <Text style={[styles.requirementsTitle, { color: colors.text }]}>
+          Requirements:
+        </Text>
         <View style={styles.requirementsList}>
-          {requirements.map(({ key, label, icon }) => {
+          {requirements.map(({ key, labelKey, icon }) => {
             const isMet = strength[key];
             return (
               <View key={key} style={styles.requirementItem}>
@@ -71,14 +106,16 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
                   style={[
                     styles.requirementIcon,
                     {
-                      backgroundColor: isMet ? "#dcfce7" : "#f3f4f6",
+                      backgroundColor: isMet
+                        ? colors.success + "20"
+                        : colors.disabled,
                     },
                   ]}
                 >
                   <Text
                     style={[
                       styles.requirementIconText,
-                      { color: isMet ? "#22c55e" : "#9ca3af" },
+                      { color: isMet ? colors.success : colors.textSecondary },
                     ]}
                   >
                     {isMet ? "✓" : icon}
@@ -88,12 +125,12 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
                   style={[
                     styles.requirementText,
                     {
-                      color: isMet ? "#22c55e" : "#6b7280",
+                      color: isMet ? colors.success : colors.textSecondary,
                       textDecorationLine: isMet ? "line-through" : "none",
                     },
                   ]}
                 >
-                  {label}
+                  {labelKey}
                 </Text>
               </View>
             );
@@ -120,7 +157,6 @@ const styles = StyleSheet.create({
   strengthTitle: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#374151",
   },
   strengthLabel: {
     fontSize: 14,
@@ -128,7 +164,6 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     height: 8,
-    backgroundColor: "#e5e7eb",
     borderRadius: 4,
     overflow: "hidden",
     flexDirection: "row",
@@ -143,7 +178,6 @@ const styles = StyleSheet.create({
   requirementsTitle: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#374151",
     marginBottom: 8,
   },
   requirementsList: {

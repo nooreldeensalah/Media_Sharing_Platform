@@ -1,17 +1,11 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  Alert,
-} from "react-native";
-import { Video, ResizeMode } from "expo-av";
+import { View, Text, FlatList, StyleSheet } from "react-native";
+import { MediaItemCard } from "./MediaItemCard";
 import { toggleLike, deleteMedia } from "../api";
-import { FontAwesome } from "@expo/vector-icons";
-import { MediaListProps } from "../types";
+import { MediaListProps, MediaItem } from "../types";
+import { useTheme } from "../contexts/ThemeContext";
+import { getColors } from "../constants/Colors";
+import { useTranslation } from "react-i18next";
 
 const MediaList: React.FC<MediaListProps> = ({
   mediaItems,
@@ -19,149 +13,166 @@ const MediaList: React.FC<MediaListProps> = ({
   currentUser,
   listRef,
 }) => {
-  const handleLike = async (id: number) => {
-    try {
-      const response = await toggleLike(id, "like");
-      setMediaItems((prev) =>
+  const { colorScheme } = useTheme();
+  const colors = getColors(colorScheme);
+  const { t } = useTranslation();
+
+  const handleToggleLike = React.useCallback(
+    async (id: number, isLiked: boolean) => {
+      // Optimistically update UI first for better UX
+      const likeIncrement = isLiked ? -1 : 1;
+
+      // Update the full mediaItems array (not just the visible paginated items)
+      setMediaItems((prev: MediaItem[]) =>
         prev.map((item) =>
           item.id === id
-            ? { ...item, likes: response.newLikeCount, likedByUser: true }
+            ? {
+                ...item,
+                likes: Math.max(0, item.likes + likeIncrement),
+                likedByUser: !isLiked,
+              }
             : item,
         ),
       );
-    } catch (error) {
-      console.error("Error liking media:", error);
-    }
-  };
 
-  const handleUnlike = async (id: number) => {
-    try {
-      const response = await toggleLike(id, "unlike");
-      setMediaItems((prev) =>
-        prev.map((item) =>
-          item.id === id
-            ? { ...item, likes: response.newLikeCount, likedByUser: false }
-            : item,
-        ),
-      );
-    } catch (error) {
-      console.error("Error unliking media:", error);
-    }
-  };
+      try {
+        const action = isLiked ? "unlike" : "like";
+        const response = await toggleLike(id, action);
 
-  const handleDelete = async (id: number) => {
-    try {
-      await deleteMedia(id);
-      setMediaItems((prev) => prev.filter((item) => item.id !== id));
-    } catch (error) {
-      console.error("Error deleting media:", error);
-    }
-  };
+        // Sync with server response using the action (not the original isLiked)
+        setMediaItems((prev: MediaItem[]) =>
+          prev.map((item) =>
+            item.id === id
+              ? {
+                  ...item,
+                  likes: response.newLikeCount,
+                  likedByUser: action === "like",
+                }
+              : item,
+          ),
+        );
+      } catch {
+        // Revert optimistic update on error
+        setMediaItems((prev: MediaItem[]) =>
+          prev.map((item) =>
+            item.id === id
+              ? {
+                  ...item,
+                  likes: Math.max(0, item.likes - likeIncrement),
+                  likedByUser: isLiked,
+                }
+              : item,
+          ),
+        );
+        throw new Error("Failed to toggle like");
+      }
+    },
+    [setMediaItems],
+  );
 
-  const confirmDelete = (id: number) => {
-    Alert.alert(
-      "Confirm Deletion",
-      "Are you sure you want to delete this media item?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => handleDelete(id),
-        },
-      ],
-    );
-  };
+  const handleDelete = React.useCallback(
+    async (id: number) => {
+      // Find the item in the current mediaItems prop (might be paginated)
+      // but we need to search in the full array for deletion
+      let itemToDelete: MediaItem | undefined;
+
+      // Update the full mediaItems array and find the item to delete
+      setMediaItems((prev: MediaItem[]) => {
+        itemToDelete = prev.find((item) => item.id === id);
+        return prev.filter((item) => item.id !== id);
+      });
+
+      try {
+        await deleteMedia(id);
+        // Success - item already removed from UI
+      } catch {
+        // Revert optimistic update on error
+        if (itemToDelete) {
+          setMediaItems((prev: MediaItem[]) => [itemToDelete!, ...prev]);
+        }
+        throw new Error("Failed to delete media");
+      }
+    },
+    [setMediaItems],
+  );
+
+  const renderItem = React.useCallback(
+    ({ item }: { item: MediaItem }) => (
+      <MediaItemCard
+        item={item}
+        currentUser={{ id: 0, email: currentUser }}
+        onToggleLike={handleToggleLike}
+        onDelete={handleDelete}
+      />
+    ),
+    [currentUser, handleToggleLike, handleDelete],
+  );
+
+  const getItemLayout = React.useCallback(
+    (_: any, index: number) => ({
+      length: 280, // Approximate height of MediaItemCard
+      offset: 280 * index,
+      index,
+    }),
+    [],
+  );
+
+  const keyExtractor = React.useCallback(
+    (item: MediaItem) => item.id.toString(),
+    [],
+  );
+
+  const renderEmpty = () => (
+    <View
+      style={[styles.emptyContainer, { backgroundColor: colors.background }]}
+    >
+      <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+        {t("noMediaFound")}
+      </Text>
+    </View>
+  );
 
   return (
     <FlatList
-      data={mediaItems}
       ref={listRef}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <View style={styles.mediaItem}>
-          {item.mimetype.startsWith("video") ? (
-            <Video
-              source={{ uri: item.url }}
-              style={styles.mediaVideo}
-              useNativeControls
-              resizeMode={ResizeMode.CONTAIN}
-              isLooping
-              shouldPlay
-            />
-          ) : (
-            <Image source={{ uri: item.url }} style={styles.mediaImage} />
-          )}
-          <View>
-            <Text style={styles.mediaText}>
-              Uploaded by:{" "}
-              <Text style={styles.boldText}>{item.created_by}</Text>
-            </Text>
-            <Text style={styles.mediaText}>Likes: {item.likes}</Text>
-            <View style={styles.mediaActions}>
-              <TouchableOpacity
-                onPress={() =>
-                  item.likedByUser ? handleUnlike(item.id) : handleLike(item.id)
-                }
-              >
-                <FontAwesome
-                  name={item.likedByUser ? "heart" : "heart-o"}
-                  size={24}
-                  color={item.likedByUser ? "red" : "gray"}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() =>
-                  item.created_by === currentUser && confirmDelete(item.id)
-                }
-                disabled={item.created_by !== currentUser}
-              >
-                <FontAwesome
-                  name="trash"
-                  size={24}
-                  color={item.created_by === currentUser ? "red" : "gray"}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
-      contentContainerStyle={styles.listContent}
+      data={mediaItems}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      getItemLayout={getItemLayout}
+      contentContainerStyle={[
+        styles.listContent,
+        mediaItems.length === 0 ? styles.emptyList : null,
+      ]}
+      ListEmptyComponent={renderEmpty}
+      showsVerticalScrollIndicator={false}
+      removeClippedSubviews={true}
+      maxToRenderPerBatch={10}
+      windowSize={10}
+      initialNumToRender={10}
+      updateCellsBatchingPeriod={100}
     />
   );
 };
 
 const styles = StyleSheet.create({
-  mediaItem: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
-    backgroundColor: "white",
-  },
-  mediaText: {
-    color: "gray",
-  },
-  boldText: {
-    fontWeight: "bold",
-  },
-  mediaImage: {
-    width: "100%",
-    height: 160,
-    resizeMode: "contain",
-  },
-  mediaVideo: {
-    width: "100%",
-    height: 160,
-  },
-  mediaActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 8,
-  },
   listContent: {
-    paddingBottom: 55,
+    paddingVertical: 8,
+    paddingBottom: 60,
+  },
+  emptyList: {
+    flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 60,
+  },
+  emptyText: {
+    fontSize: 16,
+    textAlign: "center",
+    opacity: 0.7,
   },
 });
 
-export default MediaList;
+export default React.memo(MediaList);

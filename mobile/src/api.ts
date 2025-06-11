@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TIMEOUT_CONSTANTS } from "./constants/Upload";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
@@ -61,50 +62,103 @@ export const uploadMedia = async (
   fileName: string,
   originalFilename?: string,
 ) => {
-  // Step 1: Request a pre-signed PUT URL from the backend
-  const preSignedResponse = await fetch(`${BASE_URL}/media/upload-url`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(await getAuthHeaders()),
-    },
-    body: JSON.stringify({ fileName, mimeType, originalFilename }),
-  });
+  try {
+    // Add timeout wrapper for fetch requests
+    const fetchWithTimeout = async (
+      url: string,
+      options: RequestInit,
+      timeoutMs: number = 30000,
+    ) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!preSignedResponse.ok) {
-    throw new Error("Failed to fetch pre-signed URL");
+      try {
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if ((error as any).name === "AbortError") {
+          throw new Error(
+            `Request timed out after ${timeoutMs / 1000} seconds`,
+          );
+        }
+        throw error;
+      }
+    };
+
+    // Step 1: Request a pre-signed PUT URL from the backend
+    const preSignedResponse = await fetchWithTimeout(
+      `${BASE_URL}/media/upload-url`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(await getAuthHeaders()),
+        },
+        body: JSON.stringify({ fileName, mimeType, originalFilename }),
+      },
+      TIMEOUT_CONSTANTS.PRE_SIGNED_URL,
+    ); // 10 second timeout for pre-signed URL
+
+    if (!preSignedResponse.ok) {
+      const errorText = await preSignedResponse.text();
+      throw new Error(
+        `Failed to fetch pre-signed URL: ${preSignedResponse.status} ${errorText}`,
+      );
+    }
+
+    const { url } = await preSignedResponse.json();
+
+    // Step 2: Upload the file to the pre-signed URL
+    const uploadResponse = await fetchWithTimeout(
+      url,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": mimeType,
+        },
+        body: file,
+      },
+      TIMEOUT_CONSTANTS.FILE_UPLOAD,
+    ); // 2 minute timeout for file upload
+
+    if (!uploadResponse.ok) {
+      const errorText = await uploadResponse.text();
+      throw new Error(
+        `Failed to upload file to MinIO: ${uploadResponse.status} ${errorText}`,
+      );
+    }
+
+    // Step 3: Notify the backend that the upload is complete
+    const notifyResponse = await fetchWithTimeout(
+      `${BASE_URL}/media/notify-upload`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(await getAuthHeaders()),
+        },
+        body: JSON.stringify({ fileName, mimeType, originalFilename }),
+      },
+      TIMEOUT_CONSTANTS.NOTIFICATION,
+    ); // 10 second timeout for notification
+
+    if (!notifyResponse.ok) {
+      const errorText = await notifyResponse.text();
+      throw new Error(
+        `Failed to notify backend about upload: ${notifyResponse.status} ${errorText}`,
+      );
+    }
+
+    const result = await notifyResponse.json();
+    return result;
+  } catch (error: any) {
+    throw error; // Re-throw to maintain the error chain
   }
-
-  const { url } = await preSignedResponse.json();
-
-  // Step 2: Upload the file to the pre-signed URL
-  const uploadResponse = await fetch(url, {
-    method: "PUT",
-    headers: {
-      "Content-Type": mimeType,
-    },
-    body: file,
-  });
-
-  if (!uploadResponse.ok) {
-    throw new Error("Failed to upload file to MinIO");
-  }
-
-  // Step 3: Notify the backend that the upload is complete
-  const notifyResponse = await fetch(`${BASE_URL}/media/notify-upload`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(await getAuthHeaders()),
-    },
-    body: JSON.stringify({ fileName, mimeType, originalFilename }),
-  });
-
-  if (!notifyResponse.ok) {
-    throw new Error("Failed to notify backend about upload");
-  }
-
-  return notifyResponse.json();
 };
 
 export const deleteMedia = async (id: number) => {
@@ -133,5 +187,3 @@ export const toggleLike = async (id: number, action: "like" | "unlike") => {
   }
   return response.json();
 };
-
-

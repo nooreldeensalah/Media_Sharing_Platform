@@ -2,28 +2,44 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  Button,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { registerUser } from "../api";
 import PasswordStrengthIndicator from "../components/PasswordStrengthIndicator";
 import { checkPasswordStrength } from "../utils/passwordUtils";
 import { useDebounce } from "../hooks/useDebounce";
 import { NavigationProp } from "../types";
+import { useTheme } from "../contexts/ThemeContext";
+import { getColors } from "../constants/Colors";
+import { useTranslation } from "react-i18next";
+import { useToast } from "../contexts/ToastContext";
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
+import { ThemeToggle } from "../components/ui/ThemeToggle";
+import { LanguageSelector } from "../components/ui/LanguageSelector";
 
 const RegisterScreen: React.FC = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigation = useNavigation<NavigationProp>();
 
-  // Debounce only for error messages to reduce UI noise
-  const debouncedPassword = useDebounce(password, 300);
-  const debouncedConfirmPassword = useDebounce(confirmPassword, 300);
+  const navigation = useNavigation<NavigationProp>();
+  const { colorScheme } = useTheme();
+  const colors = getColors(colorScheme);
+  const { t } = useTranslation();
+  const toast = useToast();
+
+  // Longer debounce for password fields to prevent premature error messages
+  const debouncedPassword = useDebounce(password, 800);
+  const debouncedConfirmPassword = useDebounce(confirmPassword, 800);
 
   // Password strength indicator updates immediately for better UX
   const passwordStrength = checkPasswordStrength(password);
@@ -37,87 +53,179 @@ const RegisterScreen: React.FC = () => {
     debouncedPassword &&
     debouncedPassword !== debouncedConfirmPassword;
 
+  const canSubmit = email && isPasswordValid && passwordsMatch && !isLoading;
+
   const handleRegister = async () => {
+    if (!canSubmit) return;
+
     try {
-      await registerUser(username, password);
+      setIsLoading(true);
       setError("");
+      await registerUser(email, password);
+      toast.success(t("success"), t("accountCreatedSuccessfully"));
       navigation.navigate("Login");
     } catch (err) {
-      setError((err as Error).message);
+      const errorMessage = (err as Error).message;
+      setError(errorMessage);
+      toast.error(t("error"), errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Register</Text>
-      {error && <Text style={styles.error}>{error}</Text>}
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={[styles.input, showPasswordMismatch ? styles.inputError : null]}
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-      {showPasswordMismatch && (
-        <Text style={styles.error}>Passwords do not match</Text>
-      )}
-      {/* Always show password strength indicator */}
-      <PasswordStrengthIndicator strength={passwordStrength} />
-      <Button
-        title="Register"
-        onPress={handleRegister}
-        disabled={!isPasswordValid || !passwordsMatch || !username}
-      />
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.link}>Already registered? Login here</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoid}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Header with theme and language controls */}
+          <View style={styles.header}>
+            <ThemeToggle />
+            <LanguageSelector />
+          </View>
+
+          {/* Main Content */}
+          <View style={styles.content}>
+            <Text style={[styles.title, { color: colors.text }]}>
+              {t("registerTitle")}
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              {t("registerSubtitle")}
+            </Text>
+
+            <View style={styles.form}>
+              <Input
+                label={t("email")}
+                placeholder={t("emailPlaceholder")}
+                value={email}
+                onChangeText={setEmail}
+                leftIcon="mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={error && !email ? "Email is required" : undefined}
+                required
+              />
+
+              <Input
+                label={t("password")}
+                placeholder={t("passwordPlaceholder")}
+                value={password}
+                onChangeText={setPassword}
+                leftIcon="lock-closed"
+                secureTextEntry
+                showPasswordToggle
+                error={error && !password ? "Password is required" : undefined}
+                required
+              />
+
+              <Input
+                label={t("confirmPassword")}
+                placeholder={t("confirmPasswordPlaceholder")}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                leftIcon="lock-closed"
+                secureTextEntry
+                showPasswordToggle
+                error={
+                  showPasswordMismatch ? "Passwords do not match" : undefined
+                }
+                required
+              />
+
+              {/* Always show password strength indicator */}
+              {password && (
+                <PasswordStrengthIndicator strength={passwordStrength} />
+              )}
+
+              {error && (
+                <Text style={[styles.error, { color: colors.error }]}>
+                  {error}
+                </Text>
+              )}
+
+              <Button
+                onPress={handleRegister}
+                loading={isLoading}
+                disabled={!canSubmit}
+                style={styles.registerButton}
+              >
+                {t("registerButton")}
+              </Button>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Login")}
+              style={styles.loginLink}
+              accessibilityLabel="Go to login screen"
+              accessibilityRole="button"
+            >
+              <Text style={[styles.linkText, { color: colors.primary }]}>
+                {t("alreadyHaveAccount")} {t("loginButton")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+  },
+  keyboardAvoid: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
+    paddingTop: 8,
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 24,
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
-    marginBottom: 16,
     textAlign: "center",
+    marginBottom: 8,
   },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
+  subtitle: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 32,
   },
-  inputError: {
-    borderColor: "red",
+  form: {
+    marginBottom: 24,
+  },
+  registerButton: {
+    marginTop: 8,
   },
   error: {
-    color: "red",
-    marginBottom: 12,
+    fontSize: 14,
     textAlign: "center",
+    marginBottom: 16,
   },
-  link: {
-    color: "blue",
-    marginTop: 16,
+  loginLink: {
+    alignItems: "center",
+  },
+  linkText: {
+    fontSize: 16,
     textAlign: "center",
   },
 });

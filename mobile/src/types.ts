@@ -10,15 +10,27 @@ export type RootStackParamList = {
 
 export type NavigationProp = StackNavigationProp<RootStackParamList>;
 
+// User types
+export interface User {
+  id: string;
+  email: string;
+}
+
 export interface MediaItem {
   id: number;
   file_name: string;
+  original_filename?: string;
   likes: number;
   url: string;
   created_at: string;
   mimetype: string;
   likedByUser: boolean;
   created_by: string;
+  size?: number;
+  user?: {
+    id: number;
+    email: string;
+  };
 }
 
 export interface MediaListProps {
@@ -29,11 +41,6 @@ export interface MediaListProps {
 }
 
 export interface UploadIconProps {
-  addNewMediaItem: (newMedia: MediaItem) => void;
-}
-
-// UploadMedia props
-export interface UploadMediaProps {
   addNewMediaItem: (newMedia: MediaItem) => void;
 }
 

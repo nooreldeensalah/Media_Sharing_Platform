@@ -2,86 +2,195 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  Button,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { loginUser } from "../api";
 import { NavigationProp } from "../types";
 import { LoginScreenProps } from "../types";
+import { useTheme } from "../contexts/ThemeContext";
+import { getColors } from "../constants/Colors";
+import { useTranslation } from "react-i18next";
+import { useToast } from "../contexts/ToastContext";
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
+import { ThemeToggle } from "../components/ui/ThemeToggle";
+import { LanguageSelector } from "../components/ui/LanguageSelector";
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ setIsAuthenticated }) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
   const navigation = useNavigation<NavigationProp>();
+  const { colorScheme } = useTheme();
+  const colors = getColors(colorScheme);
+  const { t } = useTranslation();
+  const toast = useToast();
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
     try {
-      const { token } = await loginUser(username, password);
+      setIsLoading(true);
+      setError("");
+      const { token } = await loginUser(email, password);
       await AsyncStorage.setItem("token", token);
       setIsAuthenticated(true);
-      setError("");
+      toast.success(t("success"), t("welcomeBack"));
     } catch (err) {
-      setError((err as Error).message);
+      const errorMessage = (err as Error).message;
+      setError(errorMessage);
+      toast.error(t("error"), errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      {error && <Text style={styles.error}>{error}</Text>}
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Button title="Login" onPress={handleLogin} />
-      <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-        <Text style={styles.link}>Not registered? Register here</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoid}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Header with theme and language controls */}
+          <View style={styles.header}>
+            <ThemeToggle />
+            <LanguageSelector />
+          </View>
+
+          {/* Main Content */}
+          <View style={styles.content}>
+            <Text style={[styles.title, { color: colors.text }]}>
+              {t("loginTitle")}
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              {t("loginSubtitle")}
+            </Text>
+
+            <View style={styles.form}>
+              <Input
+                label={t("email")}
+                placeholder={t("emailPlaceholder")}
+                value={email}
+                onChangeText={setEmail}
+                leftIcon="mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={error && !email ? "Email is required" : undefined}
+                required
+              />
+
+              <Input
+                label={t("password")}
+                placeholder={t("passwordPlaceholder")}
+                value={password}
+                onChangeText={setPassword}
+                leftIcon="lock-closed"
+                secureTextEntry
+                showPasswordToggle
+                error={error && !password ? "Password is required" : undefined}
+                required
+              />
+
+              {error && (
+                <Text style={[styles.error, { color: colors.error }]}>
+                  {error}
+                </Text>
+              )}
+
+              <Button
+                onPress={handleLogin}
+                loading={isLoading}
+                disabled={!email || !password}
+                style={styles.loginButton}
+              >
+                {t("loginButton")}
+              </Button>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Register")}
+              style={styles.registerLink}
+              accessibilityLabel="Go to register screen"
+              accessibilityRole="button"
+            >
+              <Text style={[styles.linkText, { color: colors.primary }]}>
+                {t("noAccount")} {t("registerButton")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+  },
+  keyboardAvoid: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
+    paddingTop: 8,
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 24,
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
-    marginBottom: 16,
     textAlign: "center",
+    marginBottom: 8,
   },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
+  subtitle: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 32,
+  },
+  form: {
+    marginBottom: 24,
+  },
+  loginButton: {
+    marginTop: 8,
   },
   error: {
-    color: "red",
-    marginBottom: 12,
+    fontSize: 14,
     textAlign: "center",
+    marginBottom: 16,
   },
-  link: {
-    color: "blue",
-    marginTop: 16,
+  registerLink: {
+    alignItems: "center",
+  },
+  linkText: {
+    fontSize: 16,
     textAlign: "center",
   },
 });
