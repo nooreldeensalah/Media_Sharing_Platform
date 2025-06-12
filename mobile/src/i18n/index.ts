@@ -67,6 +67,7 @@ const resources = {
       uploadFailedToStart: "Upload failed to start",
       likeUpdateFailed: "Failed to update like status",
       deleteMediaFailed: "Failed to delete media",
+      shareFailed: "Failed to share media",
       deleteConfirm:
         "Are you sure you want to delete this media? This action cannot be undone.",
       delete: "Delete",
@@ -190,6 +191,7 @@ const resources = {
       uploadFailedToStart: "فشل في بدء الرفع",
       likeUpdateFailed: "فشل في تحديث حالة الإعجاب",
       deleteMediaFailed: "فشل في حذف الوسائط",
+      shareFailed: "فشل في مشاركة الوسائط",
       deleteConfirm:
         "هل أنت متأكد من حذف هذه الوسائط؟ لا يمكن التراجع عن هذا الإجراء.",
       delete: "حذف",

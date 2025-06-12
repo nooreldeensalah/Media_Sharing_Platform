@@ -5,13 +5,10 @@ import {
   Text,
   StyleSheet,
   Dimensions,
-  TouchableOpacity,
   StatusBar,
-  Share,
 } from "react-native";
 import { Image } from "expo-image";
 import { VideoView, useVideoPlayer } from "expo-video";
-import { Ionicons } from "@expo/vector-icons";
 import { MediaItem } from "../types";
 
 interface MediaViewerProps {
@@ -64,24 +61,6 @@ export const MediaViewer: React.FC<MediaViewerProps> = ({
     }
   }, [visible, item, isVideo, player]);
 
-  const handleClose = React.useCallback(() => {
-    onClose();
-  }, [onClose]);
-
-  const handleShare = React.useCallback(async () => {
-    if (!item) return;
-    try {
-      await Share.share({
-        url: item.url,
-        message: `Check out this ${isVideo ? "video" : "image"}: ${
-          item.original_filename || item.file_name
-        }`,
-      });
-    } catch (error) {
-      console.error("Error sharing:", error);
-    }
-  }, [item, isVideo]);
-
   if (!item) return null;
 
   return (
@@ -89,7 +68,7 @@ export const MediaViewer: React.FC<MediaViewerProps> = ({
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={handleClose}
+      onRequestClose={onClose}
     >
       <StatusBar barStyle="light-content" backgroundColor="black" />
 
@@ -124,23 +103,6 @@ export const MediaViewer: React.FC<MediaViewerProps> = ({
               <Text style={styles.loadingText}>Loading...</Text>
             </View>
           )}
-
-          {/* Top Controls - Always visible for close button */}
-          <View style={styles.topControls}>
-            <TouchableOpacity
-              onPress={handleClose}
-              style={styles.controlButton}
-            >
-              <Ionicons name="close" size={28} color="white" />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={handleShare}
-              style={styles.controlButton}
-            >
-              <Ionicons name="share-outline" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
         </View>
       </View>
     </Modal>
@@ -177,22 +139,5 @@ const styles = StyleSheet.create({
   loadingText: {
     color: "white",
     fontSize: 16,
-  },
-  topControls: {
-    position: "absolute",
-    top: 44, // Consider using SafeAreaView or equivalent for better positioning
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: "rgba(0, 0, 0, 0.0)", // Making controls background transparent
-  },
-  controlButton: {
-    padding: 8,
-    borderRadius: 24,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
 });

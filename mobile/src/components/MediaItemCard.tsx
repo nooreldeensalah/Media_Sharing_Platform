@@ -7,6 +7,7 @@ import {
   Dimensions,
   Linking,
   Pressable,
+  Share,
 } from "react-native";
 import { Image } from "expo-image";
 import { VideoView, useVideoPlayer } from "expo-video";
@@ -120,6 +121,18 @@ const MediaItemCard: React.FC<MediaItemCardProps> = React.memo(
       setShowDeleteModal(true);
     }, []);
 
+    const handleShare = useCallback(async () => {
+      try {
+        await Share.share({
+          url: item.url,
+          message: `Check out this ${isVideo ? "video" : "image"}: ${item.url}`,
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+        toast.error(t("error"), t("shareFailed"));
+      }
+    }, [item, isVideo, toast, t]);
+
     const confirmDelete = useCallback(async () => {
       setShowDeleteModal(false);
       try {
@@ -162,7 +175,7 @@ const MediaItemCard: React.FC<MediaItemCardProps> = React.memo(
               <Image
                 source={{ uri: item.url }}
                 style={styles.media}
-                contentFit="cover"
+                contentFit="contain"
                 onError={() => setImageError(true)}
                 placeholder={{ blurhash: "LKN]Rv%2Tw=w]~RBVZRi};RPxuwH" }}
                 transition={200}
@@ -286,14 +299,32 @@ const MediaItemCard: React.FC<MediaItemCardProps> = React.memo(
                 </Text>
               </TouchableOpacity>
 
-              {isOwner && (
+              <View
+                style={[
+                  styles.actionButtons,
+                  { flexDirection: getFlexDirection(i18n.language) },
+                ]}
+              >
                 <TouchableOpacity
-                  onPress={handleDelete}
-                  style={styles.deleteButton}
+                  onPress={handleShare}
+                  style={styles.shareButton}
                 >
-                  <Ionicons name="trash-outline" size={18} color="#FF4444" />
+                  <Ionicons
+                    name="share-outline"
+                    size={18}
+                    color={colors.textSecondary}
+                  />
                 </TouchableOpacity>
-              )}
+
+                {isOwner && (
+                  <TouchableOpacity
+                    onPress={handleDelete}
+                    style={styles.deleteButton}
+                  >
+                    <Ionicons name="trash-outline" size={18} color="#FF4444" />
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           </View>
         </View>
@@ -418,6 +449,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 4,
   },
+  actionButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
   likeButton: {
     alignItems: "center",
     gap: 6,
@@ -429,6 +465,10 @@ const styles = StyleSheet.create({
   likeCount: {
     fontSize: 14,
     fontWeight: "600",
+  },
+  shareButton: {
+    padding: 6,
+    borderRadius: 8,
   },
   deleteButton: {
     padding: 6,

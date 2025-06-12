@@ -147,16 +147,14 @@ interface ToastItemProps {
 const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss }) => {
   const { colorScheme } = useTheme();
   const colors = getColors(colorScheme);
-  const [animation] = useState(new Animated.Value(0));
+  const [animation] = useState(() => new Animated.Value(0));
 
   React.useEffect(() => {
-    Animated.sequence([
-      Animated.timing(animation, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    Animated.timing(animation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   }, [animation]);
 
   const handleDismiss = () => {
