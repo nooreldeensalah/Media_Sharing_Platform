@@ -196,6 +196,7 @@ export class MediaService {
       return {
         id: info.lastInsertRowid as number,
         file_name: fileName,
+        original_filename: originalFilename,
         likes: 0,
         url: canonicalUrl,
         created_at: new Date().toISOString(),

@@ -46,11 +46,12 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
       <div
         className="relative aspect-[4/3] bg-gray-100 dark:bg-gray-700 overflow-hidden cursor-pointer group"
         onClick={handleMediaClick}
+        title={t("general.open")}
       >
         {mediaType === "video" ? (
           <video
             controls
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-all duration-300"
             src={item.url}
             aria-label={t("a11y.mediaVideo", { filename: item.file_name })}
             preload="metadata"
@@ -87,9 +88,9 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
             ) : (
               <img
                 alt={altText}
-                className={`media-image transition-all duration-300 ${
+                className={`media-image ${
                   imageLoaded ? "loaded opacity-100" : "loading opacity-0"
-                } group-hover:scale-105`}
+                }`}
                 src={item.url}
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}

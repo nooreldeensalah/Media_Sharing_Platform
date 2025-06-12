@@ -48,12 +48,17 @@ const resources = {
       "media.deleteConfirm.confirm": "Delete",
 
       // Search and Filters
-      "media.search.placeholder": "Search by filename...",
+      "media.search.label": "Search Content",
+      "media.search.placeholder": "Type to search files...",
       "media.search.submit": "Search",
+      "media.search.autoHint": "Search starts automatically as you type",
+      "media.filters.userLabel": "Filter by User",
       "media.filters.active": "Active filters",
       "media.filters.removeSearch": "Remove search filter",
       "media.filters.removeUser": "Remove user filter",
       "media.filters.clearAll": "Clear all filters",
+      "media.filters.allUsers": "All users",
+      "media.filters.noUsers": "No users available",
 
       // Pagination
       "pagination.previous": "Previous",
@@ -172,12 +177,17 @@ const resources = {
       "media.deleteConfirm.confirm": "حذف",
 
       // Search and Filters
-      "media.search.placeholder": "البحث بواسطة اسم الملف...",
+      "media.search.label": "البحث في المحتوى",
+      "media.search.placeholder": "اكتب للبحث في الملفات...",
       "media.search.submit": "بحث",
+      "media.search.autoHint": "البحث يبدأ تلقائياً أثناء الكتابة",
+      "media.filters.userLabel": "تصفية بواسطة المستخدم",
       "media.filters.active": "المرشحات النشطة",
       "media.filters.removeSearch": "إزالة مرشح البحث",
       "media.filters.removeUser": "إزالة مرشح المستخدم",
       "media.filters.clearAll": "مسح جميع المرشحات",
+      "media.filters.allUsers": "جميع المستخدمين",
+      "media.filters.noUsers": "لا يوجد مستخدمين متاحين",
 
       // Pagination
       "pagination.previous": "السابق",

@@ -49,6 +49,12 @@ const AppContent: React.FC = () => {
   // Debounce search query to avoid excessive API calls
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
+  // Extract unique users from media items
+  const availableUsers = React.useMemo(() => {
+    const users = mediaItems.map(item => item.created_by);
+    return Array.from(new Set(users)).sort();
+  }, [mediaItems]);
+
   const fetchMedia = React.useCallback(
     async (page: number = 1, search?: string, user?: string | null) => {
       if (isAuthenticated) {
@@ -127,14 +133,6 @@ const AppContent: React.FC = () => {
         }
       });
     });
-
-    // Scroll to gallery section to show the new item
-    setTimeout(() => {
-      const gallerySection = document.getElementById("gallery-section");
-      if (gallerySection) {
-        gallerySection.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }, 100);
   };
 
   const handlePageChange = (page: number) => {
@@ -157,9 +155,9 @@ const AppContent: React.FC = () => {
         Skip to main content
       </a>
 
-      <div className="min-h-screen flex flex-col items-center px-4 py-2">
+      <div className="min-h-screen flex flex-col items-center">
         <NavBar isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
-        <main id="main-content" className="w-full max-w-[1600px] space-y-6">
+        <main id="main-content" className="w-full max-w-[1600px] px-4 space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -190,7 +188,7 @@ const AppContent: React.FC = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="space-y-4"
+                        className="space-y-4 px-4"
                       >
                         {/* Compact upload section */}
                         <section id="upload-section">
@@ -202,8 +200,10 @@ const AppContent: React.FC = () => {
                           onSearch={handleSearch}
                           onUserFilter={handleUserFilter}
                           currentSearch={searchQuery}
+                          activeSearch={debouncedSearchQuery}
                           currentUserFilter={userFilter}
                           onClearFilters={handleClearFilters}
+                          availableUsers={availableUsers}
                         />
 
                         {/* Gallery section with more space */}

@@ -274,6 +274,7 @@ export const notifyUploadSchema = {
         file_name: { type: "string" },
         likes: { type: "number" },
         url: { type: "string" },
+        original_filename: { type: "string" },
         created_at: { type: "string", format: "date-time" },
         mimetype: { type: "string" },
         created_by: { type: "string" },

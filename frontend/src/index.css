@@ -1,47 +1,58 @@
 /* Google Fonts for Arabic support */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap");
 
+/* Josh Comeau's Custom CSS Reset */
+/* https://www.joshwcomeau.com/css/custom-css-reset/ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    interpolate-size: allow-keywords;
+  }
+}
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+input, button, textarea, select {
+  font: inherit;
+}
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+#root, #__next {
+  isolation: isolate;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* CSS Reset */
+/* Base layer customizations */
 @layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  html {
-    line-height: 1.15;
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-  }
-
   body {
     @apply bg-gray-100 text-gray-800 font-sans antialiased;
-    margin: 0;
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Make logo text unselectable */
   .logo {
-    user-select: none;
     cursor: default;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-  }
-
-  /* Image object-fit improvements */
-  img {
-    height: auto;
-    max-width: 100%;
+    user-select: none;
   }
 
   .media-image {
@@ -50,15 +61,16 @@
     width: 100%;
     height: 100%;
     background-color: #f3f4f6;
-    /* Improve image loading performance */
     image-rendering: optimizeQuality;
-    /* Add subtle transition for loading states */
-    transition:
-      opacity 0.3s ease,
-      filter 0.3s ease;
+    transition: opacity 0.3s ease, filter 0.3s ease, object-fit 0.3s ease;
   }
 
-  /* Image optimization for different screen sizes */
+  /* On hover, show the full image without cropping */
+  .group:hover .media-image {
+    object-fit: contain;
+  }
+
+  /* Image loading states */
   .media-image.loading {
     filter: blur(5px);
     opacity: 0.7;
@@ -88,27 +100,39 @@
     }
   }
 
-  /* Smooth animations */
+  /* Smooth animations with proper box-sizing */
   .card-hover {
-    transition:
-      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-      box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: center;
     will-change: transform, box-shadow;
   }
 
   .card-hover:hover {
     transform: translateY(-4px) scale(1.02);
-    box-shadow:
-      0 20px 40px -12px rgba(0, 0, 0, 0.15),
-      0 8px 16px -8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15),
+                0 8px 16px -8px rgba(0, 0, 0, 0.1);
   }
 
   /* Dark theme improvements */
   .dark .card-hover:hover {
-    box-shadow:
-      0 20px 40px -12px rgba(0, 0, 0, 0.5),
-      0 8px 16px -8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5),
+                0 8px 16px -8px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Typography improvements */
+  h1, h2 {
+    @apply font-bold text-center text-gray-800;
+  }
+
+  /* Button base styles */
+  button {
+    @apply transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  /* File input styling */
+  input[type="file"] {
+    @apply cursor-pointer text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100;
   }
 }
 
@@ -151,19 +175,6 @@
   --tw-space-x-reverse: 1;
   margin-right: calc(1rem * var(--tw-space-x-reverse));
   margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
-}
-
-h1,
-h2 {
-  @apply font-bold text-center text-gray-800;
-}
-
-button {
-  @apply transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2;
-}
-
-input[type="file"] {
-  @apply cursor-pointer text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100;
 }
 
 /* Dark mode improvements */
@@ -230,6 +241,7 @@ input[type="file"] {
 
 .dark .Toastify__toast {
   @apply bg-gray-800/95;
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-color: rgba(255, 255, 255, 0.1);
 }
@@ -240,7 +252,6 @@ html {
 }
 
 body {
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
+  transition: background-color 0.3s ease,
+              color 0.3s ease;
 }

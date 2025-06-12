@@ -84,24 +84,35 @@ const MediaList: React.FC<MediaListProps> = ({
     try {
       const response = await deleteMedia(selectedItemId);
       if (response?.message) {
-        setMediaItems((prev) =>
-          prev.filter((item) => item.id !== selectedItemId),
-        );
+        // Remove the item from the current page
+        const updatedItems = mediaItems.filter((item) => item.id !== selectedItemId);
+        setMediaItems(updatedItems);
 
-        if (setPagination && pagination) {
+        if (setPagination && pagination && onPageChange) {
+          const newTotalItems = pagination.totalItems - 1;
+          const newTotalPages = Math.ceil(newTotalItems / pagination.itemsPerPage);
+
+          // Update pagination metadata
           setPagination((prevPagination) => {
             if (prevPagination) {
-              const newTotalItems = prevPagination.totalItems - 1;
               return {
                 ...prevPagination,
                 totalItems: newTotalItems,
-                totalPages: Math.ceil(
-                  newTotalItems / prevPagination.itemsPerPage,
-                ),
+                totalPages: newTotalPages,
               };
             }
             return prevPagination;
           });
+
+          // Check if current page is now empty and we're not on page 1
+          if (updatedItems.length === 0 && pagination.currentPage > 1) {
+            // Navigate to the previous page if current page becomes empty
+            const targetPage = Math.min(pagination.currentPage - 1, newTotalPages);
+            onPageChange(Math.max(1, targetPage));
+          } else if (newTotalItems === 0) {
+            // If no items left at all, stay on page 1 - the empty state will show
+            onPageChange(1);
+          }
         }
 
         setShowModal(false);
