@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../contexts/ThemeContext";
 import { getColors } from "../constants/Colors";
+import { getFlexDirection, isRTL } from "../utils/numberUtils";
 import { ThemeToggle } from "./ui/ThemeToggle";
 import { LanguageSelector } from "./ui/LanguageSelector";
 import LogoutButton from "./LogoutButton";
@@ -43,17 +44,35 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
 }) => {
   const { colorScheme } = useTheme();
   const colors = getColors(colorScheme);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <View style={[styles.header, { backgroundColor: colors.background }]}>
-      <View style={styles.headerTop}>
+      <View
+        style={[
+          styles.headerTop,
+          { flexDirection: getFlexDirection(i18n.language) },
+        ]}
+      >
         <View style={styles.headerLeft}>
-          <Text style={[styles.appTitle, { color: colors.text }]}>
+          <Text
+            style={[
+              styles.appTitle,
+              {
+                color: colors.text,
+                textAlign: isRTL(i18n.language) ? "right" : "left",
+              },
+            ]}
+          >
             {t("home")}
           </Text>
         </View>
-        <View style={styles.headerRight}>
+        <View
+          style={[
+            styles.headerRight,
+            { flexDirection: getFlexDirection(i18n.language) },
+          ]}
+        >
           <ThemeToggle />
           <LanguageSelector />
           <LogoutButton onPress={onLogout} />
@@ -88,7 +107,6 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(0, 0, 0, 0.05)",
   },
   headerTop: {
-    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
@@ -98,7 +116,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerRight: {
-    flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },

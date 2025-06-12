@@ -10,6 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
 import { getColors } from "../constants/Colors";
+import { getFlexDirection, isRTL } from "../utils/numberUtils";
 import { useTranslation } from "react-i18next";
 import { Input } from "./ui/Input";
 import { User } from "../types";
@@ -37,7 +38,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
 }) => {
   const { colorScheme } = useTheme();
   const colors = getColors(colorScheme);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 
   const handleUserSelect = (userId: string | null) => {
@@ -58,6 +59,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         {
           backgroundColor: colors.surface,
           borderBottomColor: colors.border,
+          flexDirection: getFlexDirection(i18n.language),
         },
         (!selectedUser && !item) || selectedUser === item?.id
           ? { backgroundColor: colors.primary + "20" }
@@ -68,7 +70,15 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
       accessibilityRole="button"
     >
       <View style={styles.userInfo}>
-        <Text style={[styles.userName, { color: colors.text }]}>
+        <Text
+          style={[
+            styles.userName,
+            {
+              color: colors.text,
+              textAlign: isRTL(i18n.language) ? "right" : "left",
+            },
+          ]}
+        >
           {item?.email || t("allUsers")}
         </Text>
       </View>
@@ -83,7 +93,12 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.searchContainer}>
-        <View style={styles.searchRow}>
+        <View
+          style={[
+            styles.searchRow,
+            { flexDirection: getFlexDirection(i18n.language) },
+          ]}
+        >
           <View style={styles.searchInputContainer}>
             <Input
               placeholder={t("searchPlaceholder")}
@@ -112,7 +127,12 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         </View>
       </View>
 
-      <View style={styles.controlsContainer}>
+      <View
+        style={[
+          styles.controlsContainer,
+          { flexDirection: getFlexDirection(i18n.language) },
+        ]}
+      >
         <TouchableOpacity
           style={[
             styles.filterButton,
@@ -125,11 +145,40 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           accessibilityLabel={t("filterBy")}
           accessibilityRole="button"
         >
-          <Ionicons name="filter" size={16} color={colors.text} />
-          <Text style={[styles.filterButtonText, { color: colors.text }]}>
-            {getSelectedUserName()}
-          </Text>
-          <Ionicons name="chevron-down" size={16} color={colors.text} />
+          {/* For RTL: filter icon on left, chevron on right */}
+          {isRTL(i18n.language) ? (
+            <>
+              <Ionicons name="filter" size={16} color={colors.text} />
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  {
+                    color: colors.text,
+                    textAlign: "right",
+                  },
+                ]}
+              >
+                {getSelectedUserName()}
+              </Text>
+              <Ionicons name="chevron-down" size={16} color={colors.text} />
+            </>
+          ) : (
+            <>
+              <Ionicons name="filter" size={16} color={colors.text} />
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  {
+                    color: colors.text,
+                    textAlign: "left",
+                  },
+                ]}
+              >
+                {getSelectedUserName()}
+              </Text>
+              <Ionicons name="chevron-down" size={16} color={colors.text} />
+            </>
+          )}
         </TouchableOpacity>
 
         {onRefresh && (
@@ -177,9 +226,23 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             ]}
           >
             <View
-              style={[styles.modalHeader, { borderBottomColor: colors.border }]}
+              style={[
+                styles.modalHeader,
+                {
+                  borderBottomColor: colors.border,
+                  flexDirection: getFlexDirection(i18n.language),
+                },
+              ]}
             >
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
+              <Text
+                style={[
+                  styles.modalTitle,
+                  {
+                    color: colors.text,
+                    textAlign: isRTL(i18n.language) ? "right" : "left",
+                  },
+                ]}
+              >
                 {t("filterBy")}
               </Text>
               <TouchableOpacity
@@ -213,7 +276,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   searchRow: {
-    flexDirection: "row",
     alignItems: "center",
     gap: 12,
   },
@@ -233,13 +295,11 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   controlsContainer: {
-    flexDirection: "row",
     gap: 12,
     alignItems: "center",
   },
   filterButton: {
     flex: 1,
-    flexDirection: "row",
     alignItems: "center",
     padding: 12,
     borderRadius: 8,
@@ -272,7 +332,6 @@ const styles = StyleSheet.create({
     maxHeight: "70%",
   },
   modalHeader: {
-    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
@@ -286,7 +345,6 @@ const styles = StyleSheet.create({
     maxHeight: 300,
   },
   userItem: {
-    flexDirection: "row",
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
