@@ -1,7 +1,7 @@
 # Media Sharing Platform
 
-[![Deploy Backend to Fly.io](https://github.com/nooreldeensalah/Minly_Assesment/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/nooreldeensalah/Minly_Assesment/actions/workflows/deploy-backend.yml)
-[![Deploy Frontend to Fly.io](https://github.com/nooreldeensalah/Minly_Assesment/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/nooreldeensalah/Minly_Assesment/actions/workflows/deploy-frontend.yml)
+[![Deploy Backend to Fly.io](https://github.com/nooreldeensalah/Media_Sharing_Platform/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/nooreldeensalah/Media_Sharing_Platform/actions/workflows/deploy-backend.yml)
+[![Deploy Frontend to Fly.io](https://github.com/nooreldeensalah/Media_Sharing_Platform/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/nooreldeensalah/Media_Sharing_Platform/actions/workflows/deploy-frontend.yml)
 
 **Live Demo**: [Frontend](https://media-platform-frontend.fly.dev/) | [Backend API](https://media-platform-backend.fly.dev/)
 
@@ -169,8 +169,8 @@ To test the mobile application with the deployed backend:
 2. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/nooreldeensalah/Minly_Assesmentt
-   cd Minly_Assesmentt/mobile
+   git clone https://github.com/nooreldeensalah/Media_Sharing_Platform
+   cd Media_Sharing_Platform/mobile
    ```
 
 3. **Install dependencies:**
