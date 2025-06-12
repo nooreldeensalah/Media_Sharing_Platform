@@ -8,8 +8,8 @@ const getPreSignedPutURL: FastifyPluginAsync = async (fastify): Promise<void> =>
     const { fileName, mimeType } = request.body as UploadNotification;
 
     try {
-      const url = await fastify.s3Service.generatePreSignedPutUrl(fileName, mimeType);
-      return reply.send({ url });
+      const result = await fastify.mediaService.generateUploadUrl(fileName, mimeType);
+      return reply.send(result);
     } catch (error) {
       return handleServiceError(error as ServiceError, reply);
     }

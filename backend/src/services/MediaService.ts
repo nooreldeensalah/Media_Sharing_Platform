@@ -6,7 +6,8 @@ import {
   MediaItemWithUserInfo,
   ServiceError,
   ToggleLikeResponse,
-  DeleteMediaResponse
+  DeleteMediaResponse,
+  UploadUrlResponse
 } from '../types';
 import { addCanonicalUrlsToMediaItems, generateCanonicalUrl } from '../utils/urlGenerator';
 
@@ -161,6 +162,15 @@ export class MediaService {
       throw error;
     }
 
+    try {
+      await this.fastify.s3Service.deleteFile(row.file_name);
+    } catch (error) {
+      const serviceError = error as ServiceError;
+      if (serviceError.statusCode !== 404) {
+        throw error;
+      }
+    }
+
     const deleteResult = this.fastify.sqlite.prepare('DELETE FROM media WHERE id = ?').run(id);
 
     if (deleteResult.changes === 0) {
@@ -176,6 +186,8 @@ export class MediaService {
 
   async notifyUpload(fileName: string, mimeType: string, username: string, originalFilename?: string): Promise<MediaItem> {
     try {
+      await this.fastify.s3Service.verifyFileExists(fileName);
+
       const stmt = this.fastify.sqlite.prepare('INSERT INTO media (file_name, original_filename, likes, created_at, mimetype, created_by) VALUES (?, ?, ?, ?, ?, ?)');
       const info = stmt.run(fileName, originalFilename || null, 0, new Date().toISOString(), mimeType, username);
 
@@ -193,9 +205,33 @@ export class MediaService {
         likedByUser: false
       };
     } catch (error) {
-      const serviceError = new Error('Failed to save media metadata') as ServiceError;
-      serviceError.statusCode = 500;
-      throw serviceError;
+      const serviceError = error as ServiceError;
+      if (serviceError.statusCode === 404) {
+        const newError = new Error('File not found in S3 storage') as ServiceError;
+        newError.statusCode = 404;
+        throw newError;
+      }
+      if (serviceError.statusCode) {
+        throw error;
+      }
+      const newServiceError = new Error('Failed to save media metadata') as ServiceError;
+      newServiceError.statusCode = 500;
+      throw newServiceError;
+    }
+  }
+
+  async generateUploadUrl(fileName: string, mimeType: string): Promise<UploadUrlResponse> {
+    try {
+      const url = await this.fastify.s3Service.generatePreSignedPutUrl(fileName, mimeType);
+      return { url };
+    } catch (error) {
+      const serviceError = error as ServiceError;
+      if (serviceError.statusCode) {
+        throw error;
+      }
+      const newServiceError = new Error('Failed to generate upload URL') as ServiceError;
+      newServiceError.statusCode = 500;
+      throw newServiceError;
     }
   }
 }

@@ -105,6 +105,10 @@ export interface DeleteMediaResponse {
   message: string;
 }
 
+export interface UploadUrlResponse {
+  url: string;
+}
+
 export interface LoginResponse {
   token: string;
 }
